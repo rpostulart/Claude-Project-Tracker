@@ -100,29 +100,43 @@ No external dependencies — everything inline.
    ```
 4. Find the next comment number by checking existing files in the `comments/` directory
 
-### When Finishing
+### Definition of Done (required for every issue)
 
-You MUST complete ALL of these steps. Include them in your todo list from the start.
+An issue may ONLY be marked as `done` when ALL of these are complete:
+- [ ] Code changes implemented and working
+- [ ] Summary comment added to issue
+- [ ] Wiki Solution Log entry created
+- [ ] Technical docs updated (if architecture changed)
+- [ ] User Guide updated (if user-facing change)
+- [ ] Wiki page links added to issue comment
+- [ ] Issue status set to `done`
 
-1. Add a final summary comment listing all changes made and files modified
-2. Update the ticket status to `review` (if human review needed) or `done`
-3. Include the ticket ID in your commit message: `fix(auth): resolve login timeout [PROJ-5]`
-4. **MANDATORY — Document the work in the wiki** using the `/document-completion` skill:
-   - Always: add a Solution Log entry
-   - If user-facing: create/update a User Guide page
-   - If architecture/API changed: create/update Technical Docs
-   - If non-obvious decision made: add a Decision Record
-   - Link the wiki page(s) in the issue description
-   - Add a comment referencing the documentation
+If ANY checkbox is incomplete, the issue status MUST remain `review`.
 
-### Todo List Template
+### MANDATORY Todo Steps (in order)
 
-When planning your work, your todo list MUST include a documentation step. Example:
-1. Create issue {ID}
-2. {implementation steps...}
-3. Update issue with summary comment
-4. **Document in wiki** (solution log + user guide/technical docs if applicable)
-5. Mark issue as done
+Every task MUST follow this exact sequence. Do NOT skip or reorder steps.
+
+1. Create/find issue
+2. Set status to `in-progress`
+3. Implementation steps
+4. Add summary comment to issue listing all changes and files modified
+5. **BLOCKING: Document in wiki** (this step MUST happen before step 7)
+   - Always: Solution Log entry via `/document-completion`
+   - If architecture/API changed: Technical Docs
+   - If user-facing: User Guide
+   - If non-obvious decision made: Decision Record
+6. Add wiki page links to issue comment
+7. Mark issue as `done`
+
+**Step 5 is non-negotiable.** Do NOT mark an issue as done without completing documentation. This is the most commonly skipped step. Include it explicitly in your todo list every time.
+
+### Commit Messages
+
+Include the ticket ID in your commit message:
+- `feat(module): add feature description [PROJ-12]`
+- `fix(module): fix bug description [PROJ-5]`
+- `docs: update deployment wiki [PROJ-8]`
 
 ### When Asked About Past Work
 
@@ -162,13 +176,6 @@ Plain markdown describing the issue in detail.
   "created": "2026-03-25T10:00:00.000Z"
 }
 ```
-
-## Commit Message Format
-
-Always include the ticket ID when working on a tracked issue:
-- `feat(module): add feature description [PROJ-12]`
-- `fix(module): fix bug description [PROJ-5]`
-- `docs: update deployment wiki [PROJ-8]`
 
 ## Available Skills
 
