@@ -5,7 +5,7 @@
 await loadEnv();
 
 const args = parseArgs(Deno.args);
-const PROJECT_DIR = resolve(args.project || Deno.env.get("PROJECT_DIR") || "./.project");
+const PROJECT_DIR = resolve(args.project || Deno.env.get("PROJECT_DIR") || new URL(".", import.meta.url).pathname);
 const PORT = parseInt(args.port || Deno.env.get("PORT") || "8000");
 const UI_DIR = resolve(new URL(".", import.meta.url).pathname, "ui");
 const CURRENT_USER = Deno.env.get("PROJECT_USER") || "";
