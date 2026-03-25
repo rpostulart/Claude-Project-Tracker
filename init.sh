@@ -2,10 +2,10 @@
 set -euo pipefail
 
 # .project — Git-Native Project Management Installer
-# Usage: curl -sL https://raw.githubusercontent.com/YOURUSER/dot-project/main/init.sh | bash
+# Usage: curl -sL https://raw.githubusercontent.com/rpostulart/Claude-Project-Tracker/main/init.sh | bash
 #        ./init.sh [--prefix PREFIX] [--email EMAIL] [--name NAME]
 
-REPO_URL="https://github.com/YOURUSER/dot-project.git"
+REPO_URL="https://github.com/rpostulart/Claude-Project-Tracker.git"
 TEMPLATE_DIR="template"
 
 # --- Parse arguments ---
@@ -178,7 +178,7 @@ echo ""
 echo "  Next steps:"
 echo "    1. Start the UI server (requires Deno):"
 echo "       deno run --allow-net --allow-read --allow-write --allow-env \\"
-echo "         https://raw.githubusercontent.com/YOURUSER/dot-project/main/server.ts"
+echo "         https://raw.githubusercontent.com/rpostulart/Claude-Project-Tracker/main/server.ts"
 echo ""
 echo "    2. Open http://localhost:8000"
 echo ""

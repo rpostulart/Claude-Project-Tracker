@@ -40,6 +40,7 @@ that lets the team review past decisions and resume work on any ticket.
 1. Add a final summary comment listing all changes made and files modified
 2. Update the ticket status to `review` (if human review needed) or `done`
 3. Include the ticket ID in your commit message: `fix(auth): resolve login timeout [PROJ-5]`
+4. **Document the solution**: Create or update a wiki page under `solutions-{label}` with the problem, solution, and files changed. Add a link to the wiki page in the issue description and a comment referencing it. This builds a searchable knowledge base of past solutions.
 
 ### When Asked About Past Work
 
@@ -96,4 +97,5 @@ Always include the ticket ID when working on a tracked issue:
 - `/review-ticket <ID>` — Review a ticket's complete history
 - `/standup` — Summarize recent activity
 - `/wiki-update <title>` — Create or update a wiki page
+- `/document-completion` — Auto-documents completed issues in the wiki (runs automatically when issues are done)
 <!-- /.project -->

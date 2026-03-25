@@ -6,7 +6,7 @@ A lightweight alternative to Jira and Confluence. Issues, wikis, and boards are 
 
 ```bash
 # From inside any git repo:
-curl -sL https://raw.githubusercontent.com/YOURUSER/dot-project/main/init.sh | bash
+curl -sL https://raw.githubusercontent.com/rpostulart/Claude-Project-Tracker/main/init.sh | bash
 
 # Or with options:
 ./init.sh --prefix MYAPP --email me@example.com --name "My Project"
@@ -47,6 +47,7 @@ Claude: Reads the full ticket history — description, all comments, files chang
 | `/review-ticket <ID>` | Review a ticket's complete history |
 | `/standup` | Summarize recent activity |
 | `/wiki-update <title>` | Create or update a wiki page |
+| `/document-completion` | Auto-documents completed issues in the wiki |
 
 ## Web UI
 
