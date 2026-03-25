@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Manager</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">PM</div>
+      <h1 id="project-name">Project</h1>
+    </div>
+    <nav class="nav">
+      <a href="/" class="nav-link active" data-view="board">Board</a>
+      <a href="/list" class="nav-link" data-view="list">List</a>
+      <a href="/wiki" class="nav-link" data-view="wiki">Wiki</a>
+      <a href="/skills" class="nav-link" data-view="skills">Skills</a>
+    </nav>
+    <div class="header-right">
+      <button id="btn-create-issue" class="btn btn-primary btn-sm">+ New Issue</button>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="loading">Loading...</div>
+  </main>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

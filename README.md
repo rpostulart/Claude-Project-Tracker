@@ -55,7 +55,7 @@ The web UI gives you a visual interface for the same data:
 
 ```bash
 # Requires Deno (https://deno.land)
-deno run --allow-net --allow-read --allow-write --allow-env server.ts
+deno run --allow-net --allow-read --allow-write --allow-env .project/server.ts
 
 # Open http://localhost:8000
 ```
@@ -72,6 +72,11 @@ Features:
 ```
 .project/
 ├── config.json                 # Project name, statuses, types, priorities, labels, team
+├── server.ts                   # Deno server (API + UI)
+├── ui/                         # Web UI (vanilla JS, no build step)
+│   ├── index.html
+│   ├── css/styles.css
+│   └── js/
 ├── issues/
 │   └── PROJ-1/
 │       ├── issue.json          # Metadata: status, priority, assignee, labels, parent
@@ -100,8 +105,8 @@ Features:
 
 ## How It Works
 
-A single Deno server (`server.ts`) does two things:
-1. **Serves the web UI** from the `ui/` folder (vanilla JS, no build step)
+A single Deno server (`.project/server.ts`) does two things:
+1. **Serves the web UI** from `.project/ui/` (vanilla JS, no build step)
 2. **Provides a REST API** that reads/writes the `.project/` files on disk
 
 Everything is plain files. `git diff` shows you exactly what changed. `git log` is your audit trail.
