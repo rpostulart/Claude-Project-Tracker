@@ -12,6 +12,7 @@ TEMPLATE_DIR="template"
 PREFIX=""
 EMAIL=""
 PROJECT_NAME=""
+UPDATE_MODE=false
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -19,8 +20,9 @@ while [[ $# -gt 0 ]]; do
     --email)  EMAIL="$2"; shift 2 ;;
     --name)   PROJECT_NAME="$2"; shift 2 ;;
     --repo)   REPO_URL="$2"; shift 2 ;;
+    --update) UPDATE_MODE=true; shift ;;
     -h|--help)
-      echo "Usage: ./init.sh [--prefix PREFIX] [--email EMAIL] [--name NAME] [--repo URL]"
+      echo "Usage: ./init.sh [--prefix PREFIX] [--email EMAIL] [--name NAME] [--repo URL] [--update]"
       echo ""
       echo "Bootstraps .project/ into the current git repo."
       echo ""
@@ -29,6 +31,7 @@ while [[ $# -gt 0 ]]; do
       echo "  --email   Your email (default: git config user.email)"
       echo "  --name    Project name (default: directory name)"
       echo "  --repo    Git repo URL for the template (default: $REPO_URL)"
+      echo "  --update  Update system files (server, UI, skills) while preserving your data"
       exit 0
       ;;
     *) echo "Unknown option: $1"; exit 1 ;;
@@ -72,10 +75,18 @@ if [[ ! -d "$TEMPLATE/.project" ]]; then
   exit 1
 fi
 
-# --- Copy .project/ (don't overwrite existing files) ---
-if [[ -d .project ]]; then
+# --- Copy .project/ ---
+if [[ -d .project ]] && [[ "$UPDATE_MODE" == true ]]; then
+  echo "  Updating system files (preserving your data)..."
+  # Update server, UI, and skills — never touch issues/, wiki/, config.json
+  cp "$TEMPLATE/.project/server.ts" .project/server.ts
+  rsync -a --delete "$TEMPLATE/.project/ui/" .project/ui/
+  # Merge skills: update existing, add new, don't delete user-created ones
+  rsync -a "$TEMPLATE/.project/skills/" .project/skills/
+  echo "  Updated server, UI, and skills"
+elif [[ -d .project ]]; then
   echo "  .project/ already exists — merging new files only..."
-  # Copy missing directories and files
+  echo "  (Run with --update to update server/UI/skills to latest version)"
   rsync -a --ignore-existing "$TEMPLATE/.project/" .project/
 else
   cp -r "$TEMPLATE/.project" .project
