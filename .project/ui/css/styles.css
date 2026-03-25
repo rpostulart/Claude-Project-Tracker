@@ -281,28 +281,6 @@ label {
   font-weight: 500;
 }
 
-/* Done column filter */
-.done-filter {
-  display: flex;
-  gap: 2px;
-  padding: 4px 8px 8px;
-  flex-wrap: wrap;
-}
-
-.done-filter-btn {
-  font-size: 11px;
-  padding: 3px 8px;
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  background: var(--color-bg-card);
-  color: var(--color-text-muted);
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.done-filter-btn:hover { border-color: var(--color-accent); color: var(--color-text); }
-.done-filter-btn.active { background: var(--color-accent); color: white; border-color: var(--color-accent); }
-
 .priority-dot {
   width: 8px;
   height: 8px;

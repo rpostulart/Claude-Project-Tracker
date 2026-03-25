@@ -60,31 +60,6 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-let doneFilter = 'today'; // 'today', 'yesterday', 'week', 'month', 'all'
-
-function filterDoneIssues(issues, filter) {
-  if (filter === 'all') return issues;
-  const now = new Date();
-  let cutoff;
-  switch (filter) {
-    case 'today':
-      cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      break;
-    case 'yesterday':
-      cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-      break;
-    case 'week':
-      cutoff = new Date(now - 7 * 24 * 60 * 60 * 1000);
-      break;
-    case 'month':
-      cutoff = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
-      break;
-    default:
-      return issues;
-  }
-  return issues.filter(i => new Date(i.updated || i.created) >= cutoff);
-}
-
 export async function renderBoard(container) {
   const board = state.boards[0] || { columns: state.config.statuses.map(s => ({ status: s, title: s })) };
   const issues = state.issues;
@@ -93,10 +68,7 @@ export async function renderBoard(container) {
   boardEl.className = 'board';
 
   for (const col of board.columns) {
-    const isDone = col.status === 'done';
-    let colIssues = issues.filter(i => i.status === col.status);
-    const totalDone = colIssues.length;
-    if (isDone) colIssues = filterDoneIssues(colIssues, doneFilter);
+    const colIssues = issues.filter(i => i.status === col.status);
 
     const column = document.createElement('div');
     column.className = 'board-column';
@@ -105,17 +77,8 @@ export async function renderBoard(container) {
     column.innerHTML = `
       <div class="column-header">
         <span>${col.title}</span>
-        <span class="column-count">${colIssues.length}${isDone && doneFilter !== 'all' ? ` / ${totalDone}` : ''}</span>
+        <span class="column-count">${colIssues.length}</span>
       </div>
-      ${isDone ? `
-        <div class="done-filter">
-          <button class="done-filter-btn ${doneFilter === 'today' ? 'active' : ''}" data-filter="today">Today</button>
-          <button class="done-filter-btn ${doneFilter === 'yesterday' ? 'active' : ''}" data-filter="yesterday">Yesterday</button>
-          <button class="done-filter-btn ${doneFilter === 'week' ? 'active' : ''}" data-filter="week">Week</button>
-          <button class="done-filter-btn ${doneFilter === 'month' ? 'active' : ''}" data-filter="month">Month</button>
-          <button class="done-filter-btn ${doneFilter === 'all' ? 'active' : ''}" data-filter="all">All</button>
-        </div>
-      ` : ''}
     `;
 
     const cardsContainer = document.createElement('div');
@@ -168,16 +131,6 @@ export async function renderBoard(container) {
 
     column.appendChild(cardsContainer);
     boardEl.appendChild(column);
-
-    // Done filter buttons
-    if (isDone) {
-      column.querySelectorAll('.done-filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          doneFilter = btn.dataset.filter;
-          renderBoard(container);
-        });
-      });
-    }
   }
 
   container.innerHTML = '';

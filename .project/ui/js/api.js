@@ -115,10 +115,6 @@ const API = {
   deleteSkill(slug) {
     return this.request(`/skills/${slug}`, { method: 'DELETE' });
   },
-
-  syncSkills() {
-    return this.request('/skills/sync', { method: 'POST' });
-  },
 };
 
 export default API;
