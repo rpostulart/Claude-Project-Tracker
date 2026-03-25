@@ -4,10 +4,9 @@
 This repository uses `.project/` for issue tracking, wiki documentation, and project management.
 All data lives as plain Markdown and JSON files — no external database or service needed.
 
-## MANDATORY: Track All Work as Issues
+## MANDATORY: Track ALL Work as Issues
 
-Every significant piece of work MUST be tracked in `.project/issues/`. This creates an audit trail
-that lets the team review past decisions and resume work on any ticket.
+EVERY task that involves creating, modifying, or deleting files MUST be tracked in `.project/issues/`. No exceptions — even small tasks. This creates an audit trail that lets the team review past decisions and resume work on any ticket. If the user asks you to build, fix, add, change, or implement anything, create an issue FIRST before writing any code.
 
 ### Before Starting Work
 
