@@ -161,16 +161,6 @@ Claude reads these before every task and follows them.
 | GET/PUT/DELETE | `/api/skills/:slug` | Skill CRUD |
 | GET | `/api/boards` | Board configurations |
 
-## Roadmap
-
-- [ ] **S3/static hosting** — deploy the UI for non-dev team members (PMs, stakeholders)
-- [ ] **Docs branch sync** — UI edits commit to a `docs` branch, merged into `main` by devs
-- [ ] **Notifications** — GitHub Actions watching for status changes, posting to Slack
-- [ ] **Multi-repo dashboard** — aggregate `.project/` data across repositories
-- [ ] **Templates** — issue and wiki templates for common patterns
-- [ ] **npm/brew package** — `npx claude-project-tracker init`
-- [ ] **VS Code extension** — sidebar panel for issues and wiki
-
 ## License
 
 MIT
