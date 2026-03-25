@@ -3,7 +3,7 @@ import API from '../api.js';
 import { state, navigate } from '../app.js';
 import { renderMarkdown } from '../components/markdown.js';
 import { openModal, closeModal } from '../components/modal.js';
-import { htmlToMarkdown, editorHTML, initEditor } from '../components/md-editor.js';
+import { htmlToMarkdown, editorHTML, initEditor, insertMarkdown, insertMarkdownInPreview } from '../components/md-editor.js';
 
 function escapeHtml(text) {
   const div = document.createElement('div');

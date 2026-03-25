@@ -4,9 +4,51 @@
 This repository uses `.project/` for issue tracking, wiki documentation, and project management.
 All data lives as plain Markdown and JSON files — no external database or service needed.
 
+## Steering Files — Project Context
+
+Before starting any work, check if `.project/wiki/pages/` contains steering files (pages under the "Steering Files" parent in `_index.json`). These contain project-specific instructions like:
+- Coding standards and conventions
+- Architecture decisions and constraints
+- Team roles and responsibilities
+- Technology choices and restrictions
+
+Read all steering file pages and follow their guidance. They take priority over your defaults. For example, if a steering file says "use Tailwind CSS", don't use inline styles. If it says "all APIs must return JSON envelopes", follow that pattern.
+
+To check: read `.project/wiki/_index.json`, find pages with `"parent": "steering"`, then read each `.project/wiki/pages/{slug}.md`.
+
 ## MANDATORY: Track ALL Work as Issues
 
 EVERY task that involves creating, modifying, or deleting files MUST be tracked in `.project/issues/`. No exceptions — even small tasks. This creates an audit trail that lets the team review past decisions and resume work on any ticket. If the user asks you to build, fix, add, change, or implement anything, create an issue FIRST before writing any code.
+
+### New Ticket or Same Ticket?
+
+Before starting work, analyze whether the user's request is part of the current issue or a new one.
+
+**Same ticket** — add a comment and keep working:
+- User gives feedback on what you just did: "make it bigger", "change the color", "that's broken, fix it"
+- User asks for a tweak to the thing you just built: "also center it", "add a hover effect"
+- User clarifies requirements: "I meant a dropdown menu, not tabs"
+
+**New ticket** — create a new issue:
+- User asks for something functionally different: "now add a contact form"
+- User changes topic: "let's work on the API next"
+- User requests a new feature, even if related: "add a header with navigation" (this is a separate deliverable from the page itself)
+
+**How to decide:** Ask yourself — if this new request failed or needed to be reverted, would you revert the previous work too? If no, it's a separate ticket.
+
+**Linking related tickets:** If the new ticket relates to a previous one, set `"parent": "PREV-ID"` in issue.json to create a subtask relationship.
+
+**Examples:**
+- "add a hello world page" → TEST-1
+- "make the text red" → comment on TEST-1 (feedback on current work)
+- "add a header with menu" → TEST-2 with parent TEST-1 (new deliverable)
+- "the header menu is broken on mobile" → TEST-3 (bug report, separate ticket)
+
+Comments on a ticket should only contain:
+- Progress updates while working on THAT specific task
+- What approach was chosen and why
+- Which files were changed
+- Problems encountered and solutions
 
 ### Before Starting Work
 
@@ -14,6 +56,30 @@ EVERY task that involves creating, modifying, or deleting files MUST be tracked 
 2. Search `.project/issues/*/issue.json` for any existing ticket matching the current task
 3. If a matching ticket exists: read its `issue.json`, `description.md`, and all `comments/*.json` for full context
 4. If no ticket exists: create one following the structure below
+
+### Writing Good Descriptions
+
+The `description.md` should be detailed enough that someone reading it months later understands what was asked and what was delivered. Include:
+
+- **What was requested**: The user's original ask in their words
+- **Acceptance criteria**: What "done" looks like — specific deliverables
+- **Technical approach**: How you plan to implement it (before starting)
+- **Context**: Why this was needed, what it relates to
+
+Example:
+```markdown
+## What was requested
+User asked for an HTML file that displays "Hello World" with a fancy layout.
+
+## Acceptance criteria
+- Single `index.html` file with inline CSS
+- Visually appealing design (gradients, animations, modern typography)
+- Responsive layout that works on mobile and desktop
+
+## Technical approach
+Create a standalone HTML file with CSS animations and modern design patterns.
+No external dependencies — everything inline.
+```
 
 ### While Working
 

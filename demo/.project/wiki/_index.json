@@ -41,6 +41,12 @@
       "title": "Steering Files",
       "order": 3,
       "parent": null
+    },
+    {
+      "slug": "coding-standaards",
+      "title": "Coding standaards",
+      "order": 1,
+      "parent": "steering"
     }
   ]
 }

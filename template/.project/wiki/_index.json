@@ -1,1 +1,10 @@
-{"pages": []}
+{
+  "pages": [
+    {
+      "slug": "steering",
+      "title": "Steering Files",
+      "order": 1,
+      "parent": null
+    }
+  ]
+}
