@@ -1,0 +1,14 @@
+{
+  "id": "DEMO-1",
+  "title": "Set up CI/CD pipeline",
+  "type": "feature",
+  "status": "done",
+  "priority": "high",
+  "assignee": "alice@example.com",
+  "labels": [
+    "devops"
+  ],
+  "parent": null,
+  "created": "2026-03-20T09:00:00Z",
+  "updated": "2026-03-25T09:12:23.446Z"
+}

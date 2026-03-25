@@ -1,0 +1,6 @@
+{
+  "id": "002",
+  "author": "bob@example.com",
+  "content": "Found the issue. The login route needs to validate the session token, not just check for cookie existence. Working on a fix now.",
+  "created": "2026-03-25T08:00:00Z"
+}

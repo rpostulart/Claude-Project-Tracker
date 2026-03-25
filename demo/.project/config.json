@@ -1,0 +1,46 @@
+{
+  "name": "Demo Project",
+  "prefix": "DEMO",
+  "nextId": 13,
+  "statuses": [
+    "backlog",
+    "todo",
+    "in-progress",
+    "review",
+    "done"
+  ],
+  "types": [
+    "feature",
+    "bug",
+    "task",
+    "epic"
+  ],
+  "priorities": [
+    "critical",
+    "high",
+    "medium",
+    "low"
+  ],
+  "labels": [
+    "security",
+    "ui",
+    "backend",
+    "docs",
+    "performance",
+    "devops"
+  ],
+  "team": [
+    {
+      "name": "Alice",
+      "email": "alice@example.com"
+    },
+    {
+      "name": "Bob",
+      "email": "bob@example.com"
+    },
+    {
+      "name": "Charlie",
+      "email": "charlie@example.com"
+    }
+  ]
+}

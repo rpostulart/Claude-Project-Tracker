@@ -1,0 +1,10 @@
+{
+  "name": "Default Board",
+  "columns": [
+    { "status": "backlog", "title": "Backlog" },
+    { "status": "todo", "title": "To Do" },
+    { "status": "in-progress", "title": "In Progress" },
+    { "status": "review", "title": "Review" },
+    { "status": "done", "title": "Done" }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "id": "001",
+  "author": "charlie@example.com",
+  "content": "I can reproduce this consistently. Happens in both Chrome and Firefox. The session cookie `app_session` is present but has an expired JWT inside.",
+  "created": "2026-03-22T14:00:00Z"
+}

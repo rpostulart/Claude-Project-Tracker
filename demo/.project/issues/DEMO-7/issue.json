@@ -1,0 +1,12 @@
+{
+  "id": "DEMO-7",
+  "title": "Add unit tests for auth module",
+  "type": "task",
+  "status": "todo",
+  "priority": "medium",
+  "assignee": null,
+  "labels": [],
+  "parent": null,
+  "created": "2026-03-25T06:27:07.801Z",
+  "updated": "2026-03-25T06:27:07.801Z"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "DEMO-6",
+  "title": "Performance regression on dashboard",
+  "type": "bug",
+  "status": "in-progress",
+  "priority": "critical",
+  "assignee": null,
+  "labels": [
+    "performance",
+    "backend"
+  ],
+  "parent": null,
+  "created": "2026-03-25T07:00:00Z",
+  "updated": "2026-03-25T09:33:49.351Z"
+}

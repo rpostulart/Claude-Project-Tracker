@@ -1,0 +1,15 @@
+{
+  "id": "DEMO-2",
+  "title": "Fix login redirect loop",
+  "type": "bug",
+  "status": "review",
+  "priority": "high",
+  "assignee": "bob@example.com",
+  "labels": [
+    "security",
+    "backend"
+  ],
+  "parent": null,
+  "created": "2026-03-22T11:30:00Z",
+  "updated": "2026-03-25T09:24:59.398Z"
+}

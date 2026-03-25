@@ -1,0 +1,46 @@
+{
+  "pages": [
+    {
+      "slug": "getting-started",
+      "title": "Getting Started",
+      "order": 1,
+      "parent": null
+    },
+    {
+      "slug": "local-development",
+      "title": "Local Development",
+      "order": 1,
+      "parent": "getting-started"
+    },
+    {
+      "slug": "deployment-guide",
+      "title": "Deployment Guide",
+      "order": 2,
+      "parent": "getting-started"
+    },
+    {
+      "slug": "architecture",
+      "title": "Architecture Overview",
+      "order": 2,
+      "parent": null
+    },
+    {
+      "slug": "api-design",
+      "title": "API Designs",
+      "order": 1,
+      "parent": "rest-endpoints"
+    },
+    {
+      "slug": "rest-endpoints",
+      "title": "REST Endpoints",
+      "order": 1,
+      "parent": "architecture"
+    },
+    {
+      "slug": "steering",
+      "title": "Steering Files",
+      "order": 3,
+      "parent": null
+    }
+  ]
+}
