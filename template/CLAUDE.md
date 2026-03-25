@@ -102,10 +102,27 @@ No external dependencies — everything inline.
 
 ### When Finishing
 
+You MUST complete ALL of these steps. Include them in your todo list from the start.
+
 1. Add a final summary comment listing all changes made and files modified
 2. Update the ticket status to `review` (if human review needed) or `done`
 3. Include the ticket ID in your commit message: `fix(auth): resolve login timeout [PROJ-5]`
-4. **Document the solution**: Create or update a wiki page under `solutions-{label}` with the problem, solution, and files changed. Add a link to the wiki page in the issue description and a comment referencing it. This builds a searchable knowledge base of past solutions.
+4. **MANDATORY — Document the work in the wiki** using the `/document-completion` skill:
+   - Always: add a Solution Log entry
+   - If user-facing: create/update a User Guide page
+   - If architecture/API changed: create/update Technical Docs
+   - If non-obvious decision made: add a Decision Record
+   - Link the wiki page(s) in the issue description
+   - Add a comment referencing the documentation
+
+### Todo List Template
+
+When planning your work, your todo list MUST include a documentation step. Example:
+1. Create issue {ID}
+2. {implementation steps...}
+3. Update issue with summary comment
+4. **Document in wiki** (solution log + user guide/technical docs if applicable)
+5. Mark issue as done
 
 ### When Asked About Past Work
 

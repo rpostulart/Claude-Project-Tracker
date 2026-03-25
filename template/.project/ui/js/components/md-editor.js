@@ -1,7 +1,7 @@
 // Shared markdown editor component with toolbar + preview/source toggle
 import { renderMarkdown } from './markdown.js';
 
-function insertMarkdown(textarea, action) {
+export function insertMarkdown(textarea, action) {
   const start = textarea.selectionStart;
   const end = textarea.selectionEnd;
   const selected = textarea.value.substring(start, end);
@@ -67,7 +67,7 @@ function insertMarkdown(textarea, action) {
   textarea.setSelectionRange(newPos, newPos);
 }
 
-function insertMarkdownInPreview(editor, action) {
+export function insertMarkdownInPreview(editor, action) {
   editor.focus();
   switch (action) {
     case 'heading':
