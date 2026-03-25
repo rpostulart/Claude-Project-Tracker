@@ -541,6 +541,11 @@ async function handleApi(method: string, path: string, req: Request): Promise<Re
     return json({ skills });
   }
 
+  if (path === "/api/skills/sync" && method === "POST") {
+    await syncSkills();
+    return json({ ok: true });
+  }
+
   const skillMatch = path.match(/^\/api\/skills\/([a-z0-9-]+)$/);
   if (skillMatch) {
     const slug = skillMatch[1];

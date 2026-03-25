@@ -63,6 +63,7 @@ export async function renderSkills(container) {
         onSave: async (overlay) => {
           const newContent = overlay.querySelector('#skill-content').value;
           await API.saveSkill(slug, newContent);
+          await API.syncSkills();
           closeModal();
           renderSkills(container);
         }
@@ -77,6 +78,7 @@ export async function renderSkills(container) {
       const slug = btn.dataset.slug;
       if (confirm(`Delete skill "${slug}"?`)) {
         await API.deleteSkill(slug);
+        await API.syncSkills();
         renderSkills(container);
       }
     });
@@ -84,30 +86,57 @@ export async function renderSkills(container) {
 
   // New skill
   container.querySelector('#btn-new-skill').addEventListener('click', () => {
+    const template = `Describe what this skill does.
+
+## Steps
+
+1. First step
+2. Second step
+3. Third step
+
+## Example
+
+\`/my-skill some-argument\` does something useful.`;
+
     openModal('New Skill', `
       <div class="form-group">
         <label>Skill Name</label>
         <input type="text" id="skill-new-name" placeholder="e.g. deploy-check">
       </div>
       <div class="form-group">
-        <label>Description</label>
-        <input type="text" id="skill-new-desc" placeholder="What does this skill do?">
+        <label>Description (when should Claude use this skill?)</label>
+        <input type="text" id="skill-new-desc" placeholder="e.g. Deploy the app. Use when asked to deploy, release, or ship.">
+      </div>
+      <div class="form-group">
+        <label>Argument Hint (optional)</label>
+        <input type="text" id="skill-new-args" placeholder="e.g. <environment>">
+      </div>
+      <div class="form-group">
+        <label>Allowed Tools (comma-separated)</label>
+        <input type="text" id="skill-new-tools" placeholder="e.g. Read, Write, Edit, Glob, Bash(git *)">
       </div>
       <div class="form-group">
         <label>Instructions (Markdown)</label>
-        <textarea id="skill-new-content" style="min-height:200px;font-family:var(--font-mono);font-size:13px;" placeholder="## Usage\n/my-skill <args>\n\n## Instructions\n1. ..."></textarea>
+        <textarea id="skill-new-content" style="min-height:300px;font-family:var(--font-mono);font-size:13px;">${escapeHtml(template)}</textarea>
       </div>
     `, {
       saveLabel: 'Create',
       onSave: async (overlay) => {
         const name = overlay.querySelector('#skill-new-name').value.trim();
         const desc = overlay.querySelector('#skill-new-desc').value.trim();
+        const args = overlay.querySelector('#skill-new-args').value.trim();
+        const tools = overlay.querySelector('#skill-new-tools').value.trim();
         const body = overlay.querySelector('#skill-new-content').value;
         if (!name) return;
 
         const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-        const content = `---\nname: ${name}\ndescription: ${desc}\nuser_invocable: true\n---\n\n${body}`;
+        let frontmatter = `---\nname: ${name}\ndescription: ${desc}`;
+        if (args) frontmatter += `\nargument-hint: ${args}`;
+        if (tools) frontmatter += `\nallowed-tools: ${tools}`;
+        frontmatter += `\n---`;
+        const content = `${frontmatter}\n\n${body}`;
         await API.saveSkill(slug, content);
+        await API.syncSkills();
         closeModal();
         renderSkills(container);
       }
