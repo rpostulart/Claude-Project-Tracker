@@ -1,0 +1,11 @@
+{
+  "id": "default",
+  "name": "Board",
+  "columns": [
+    {"status": "backlog", "title": "Backlog"},
+    {"status": "todo", "title": "To Do"},
+    {"status": "in-progress", "title": "In Progress", "wipLimit": 3},
+    {"status": "review", "title": "Review"},
+    {"status": "done", "title": "Done"}
+  ]
+}
