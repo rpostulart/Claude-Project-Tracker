@@ -1,106 +1,43 @@
 <!-- .project -->
 # .project — Git-Native Project Tracker
 
-This repository uses `.project/` for issue tracking, wiki documentation, and project management.
-All data lives as plain Markdown and JSON files — no external database or service needed.
+## GOLDEN RULES (never skip, even after long conversations)
 
-## Steering Files — Project Context
+1. **EVERY task that changes files → create .project issue FIRST**
+2. **EVERY completed issue → update wiki BEFORE marking done** (solution log + docs)
+3. **EVERY commit → include ticket ID**: `fix(module): description [PROJ-5]`
+4. **EVERY todo list → must include "document in wiki" step before "mark done"**
 
-Before starting any work, check if `.project/wiki/pages/` contains steering files (pages under the "Steering Files" parent in `_index.json`). These contain project-specific instructions like:
-- Coding standards and conventions
-- Architecture decisions and constraints
-- Team roles and responsibilities
-- Technology choices and restrictions
+Violating these rules breaks the audit trail. No exceptions for "quick fixes".
 
-Read all steering file pages and follow their guidance. They take priority over your defaults. For example, if a steering file says "use Tailwind CSS", don't use inline styles. If it says "all APIs must return JSON envelopes", follow that pattern.
+### Before ANY Implementation
 
-To check: read `.project/wiki/_index.json`, find pages with `"parent": "steering"`, then read each `.project/wiki/pages/{slug}.md`.
+Stop. Answer these before writing code:
+- [ ] Is there a `.project` issue for this? If not → `/create-issue` NOW
+- [ ] Is the issue status set to `in-progress`?
+- [ ] Does my todo list include "document in wiki" as a step BEFORE marking done?
 
-## MANDATORY: Track ALL Work as Issues
+If any answer is "no", fix it before proceeding.
 
-EVERY task that involves creating, modifying, or deleting files MUST be tracked in `.project/issues/`. No exceptions — even small tasks. This creates an audit trail that lets the team review past decisions and resume work on any ticket. If the user asks you to build, fix, add, change, or implement anything, create an issue FIRST before writing any code.
+## MANDATORY Workflow (exact sequence, never skip or reorder)
 
-### New Ticket or Same Ticket?
-
-Before starting work, analyze whether the user's request is part of the current issue or a new one.
-
-**Same ticket** — add a comment and keep working:
-- User gives feedback on what you just did: "make it bigger", "change the color", "that's broken, fix it"
-- User asks for a tweak to the thing you just built: "also center it", "add a hover effect"
-- User clarifies requirements: "I meant a dropdown menu, not tabs"
-
-**New ticket** — create a new issue:
-- User asks for something functionally different: "now add a contact form"
-- User changes topic: "let's work on the API next"
-- User requests a new feature, even if related: "add a header with navigation" (this is a separate deliverable from the page itself)
-
-**How to decide:** Ask yourself — if this new request failed or needed to be reverted, would you revert the previous work too? If no, it's a separate ticket.
-
-**Linking related tickets:** If the new ticket relates to a previous one, set `"parent": "PREV-ID"` in issue.json to create a subtask relationship.
-
-**Examples:**
-- "add a hello world page" → TEST-1
-- "make the text red" → comment on TEST-1 (feedback on current work)
-- "add a header with menu" → TEST-2 with parent TEST-1 (new deliverable)
-- "the header menu is broken on mobile" → TEST-3 (bug report, separate ticket)
-
-Comments on a ticket should only contain:
-- Progress updates while working on THAT specific task
-- What approach was chosen and why
-- Which files were changed
-- Problems encountered and solutions
-
-### Before Starting Work
-
-1. Read `.project/config.json` to get the project prefix and current issue counter
-2. Search `.project/issues/*/issue.json` for any existing ticket matching the current task
-3. If a matching ticket exists: read its `issue.json`, `description.md`, and all `comments/*.json` for full context
-4. If no ticket exists: create one following the structure below
-
-### Writing Good Descriptions
-
-The `description.md` should be detailed enough that someone reading it months later understands what was asked and what was delivered. Include:
-
-- **What was requested**: The user's original ask in their words
-- **Acceptance criteria**: What "done" looks like — specific deliverables
-- **Technical approach**: How you plan to implement it (before starting)
-- **Context**: Why this was needed, what it relates to
-
-Example:
-```markdown
-## What was requested
-User asked for an HTML file that displays "Hello World" with a fancy layout.
-
-## Acceptance criteria
-- Single `index.html` file with inline CSS
-- Visually appealing design (gradients, animations, modern typography)
-- Responsive layout that works on mobile and desktop
-
-## Technical approach
-Create a standalone HTML file with CSS animations and modern design patterns.
-No external dependencies — everything inline.
+```
+1. Create/find issue          → /create-issue or /track-work
+2. Set status in-progress     → update issue.json
+3. Implement                  → code changes, add comments as you work
+4. Summary comment            → list all changes and files modified
+5. ⛔ DOCUMENT IN WIKI ⛔     → BLOCKING: must happen before step 7
+   - Always: Solution Log     → /document-completion
+   - If architecture changed: Technical Docs
+   - If user-facing:          User Guide
+   - If non-obvious decision: Decision Record
+6. Link wiki in issue         → add comment with wiki page links
+7. Mark done                  → only after ALL above are complete
 ```
 
-### While Working
+**Step 5 is non-negotiable.** This is the most commonly skipped step. If you find yourself about to mark an issue as done, STOP and check: did you run `/document-completion`?
 
-1. Update the ticket status to `in-progress` in `issue.json`
-2. Add comments as you work in `.project/issues/{ID}/comments/{NNN}.json`:
-   - What approach you chose and why
-   - Which files you created or modified
-   - Problems encountered and how you solved them
-   - Decisions made and their rationale
-3. Each comment file follows this format:
-   ```json
-   {
-     "id": "NNN",
-     "author": "Claude Code",
-     "content": "Description of what was done...",
-     "created": "2026-03-25T10:00:00.000Z"
-   }
-   ```
-4. Find the next comment number by checking existing files in the `comments/` directory
-
-### Definition of Done (required for every issue)
+### Definition of Done Checklist
 
 An issue may ONLY be marked as `done` when ALL of these are complete:
 - [ ] Code changes implemented and working
@@ -109,42 +46,62 @@ An issue may ONLY be marked as `done` when ALL of these are complete:
 - [ ] Technical docs updated (if architecture changed)
 - [ ] User Guide updated (if user-facing change)
 - [ ] Wiki page links added to issue comment
-- [ ] Issue status set to `done`
 
 If ANY checkbox is incomplete, the issue status MUST remain `review`.
 
-### MANDATORY Todo Steps (in order)
+---
 
-Every task MUST follow this exact sequence. Do NOT skip or reorder steps.
+## Steering Files — Project Context
 
-1. Create/find issue
-2. Set status to `in-progress`
-3. Implementation steps
-4. Add summary comment to issue listing all changes and files modified
-5. **BLOCKING: Document in wiki** (this step MUST happen before step 7)
-   - Always: Solution Log entry via `/document-completion`
-   - If architecture/API changed: Technical Docs
-   - If user-facing: User Guide
-   - If non-obvious decision made: Decision Record
-6. Add wiki page links to issue comment
-7. Mark issue as `done`
+Before starting any work, check `.project/wiki/pages/` for steering files (pages with `"parent": "steering"` in `_index.json`). These contain project-specific coding standards, architecture decisions, and conventions. They take priority over your defaults.
 
-**Step 5 is non-negotiable.** Do NOT mark an issue as done without completing documentation. This is the most commonly skipped step. Include it explicitly in your todo list every time.
+To check: read `.project/wiki/_index.json`, find pages with `"parent": "steering"`, then read each `.project/wiki/pages/{slug}.md`.
 
-### Commit Messages
+## Issue Tracking Details
 
-Include the ticket ID in your commit message:
-- `feat(module): add feature description [PROJ-12]`
-- `fix(module): fix bug description [PROJ-5]`
-- `docs: update deployment wiki [PROJ-8]`
+### New Ticket or Same Ticket?
+
+**Same ticket** (add a comment, keep working):
+- Feedback on current work: "make it bigger", "change the color", "fix that"
+- Tweaks to what you just built: "also center it", "add hover effect"
+- Clarifications: "I meant a dropdown, not tabs"
+
+**New ticket** (create a new issue):
+- Functionally different request: "now add a contact form"
+- Topic change: "let's work on the API next"
+- New feature, even if related: "add a header with navigation"
+
+**Rule of thumb:** If the new request failed, would you revert the previous work too? If no → separate ticket.
+
+### Before Starting Work
+
+1. Read `.project/config.json` for project prefix and issue counter
+2. Search `.project/issues/*/issue.json` for existing matching ticket
+3. If exists: read `issue.json`, `description.md`, and `comments/*.json` for full context
+4. If not: create one with detailed `description.md`
+
+### Writing Good Descriptions
+
+Include in `description.md`:
+- **What was requested**: User's original ask
+- **Acceptance criteria**: What "done" looks like
+- **Technical approach**: How you plan to implement
+- **Context**: Why this is needed
+
+### While Working
+
+1. Set status to `in-progress`
+2. Add comments in `.project/issues/{ID}/comments/{NNN}.json` as you work
+3. Track: approach chosen, files changed, problems encountered, decisions made
+
+> **REMINDER**: Is "document in wiki" in your todo list? If not, add it NOW.
 
 ### When Asked About Past Work
 
-When a user references a ticket (e.g., "look at PROJ-5", "what happened with the login bug"):
 1. Read `.project/issues/{ID}/issue.json` for metadata
 2. Read `.project/issues/{ID}/description.md` for the original problem
-3. Read all files in `.project/issues/{ID}/comments/` for the full history
-4. Summarize the timeline: what was done, by whom, which files were changed, and the outcome
+3. Read all `comments/*.json` for the full history
+4. Summarize: what was done, by whom, which files, and the outcome
 
 ## File Formats
 
@@ -163,9 +120,6 @@ When a user references a ticket (e.g., "look at PROJ-5", "what happened with the
   "updated": "2026-03-25T10:00:00.000Z"
 }
 ```
-
-### .project/issues/{ID}/description.md
-Plain markdown describing the issue in detail.
 
 ### .project/issues/{ID}/comments/NNN.json
 ```json
@@ -186,5 +140,11 @@ Plain markdown describing the issue in detail.
 - `/review-ticket <ID>` — Review a ticket's complete history
 - `/standup` — Summarize recent activity
 - `/wiki-update <title>` — Create or update a wiki page
-- `/document-completion` — Auto-documents completed issues in the wiki (runs automatically when issues are done)
+- `/document-completion` — Document completed work in wiki **(use this for step 5)**
+
+## Commit Messages
+
+Include ticket ID: `feat(module): description [PROJ-12]` | `fix(module): description [PROJ-5]`
+
+> **FINAL REMINDER**: Issue → implement → document in wiki → THEN mark done. Never skip documentation.
 <!-- /.project -->
