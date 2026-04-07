@@ -1,0 +1,19 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/require-issue.sh"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/require-docs.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

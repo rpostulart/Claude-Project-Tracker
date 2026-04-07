@@ -26,14 +26,16 @@ Begin tracked work on an issue with full audit trail.
 
 3. Set the issue status to `in-progress` and update the timestamp
 
-4. Add an opening comment:
+4. **Update issues index**: Read `.project/issues_index.json` (create as `[]` if missing). Replace the entry with matching `id` (or add if missing) using fields: `id`, `title`, `type`, `status`, `priority`, `assignee`, `labels`, `parent`, `created`, `updated`. Sort by `updated` descending. Write back.
+
+5. Add an opening comment:
    ```json
    {"id": "001", "author": "Claude Code", "content": "Starting work on this issue.", "created": "<ISO-8601>"}
    ```
 
-5. Summarize the issue context to the user
+6. Summarize the issue context to the user
 
-6. Tell the user: "Tracking work under {ID}. I will add comments as I work and update the status when done."
+7. Tell the user: "Tracking work under {ID}. I will add comments as I work and update the status when done."
 
 ## During Work
 

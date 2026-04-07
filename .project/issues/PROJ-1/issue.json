@@ -1,0 +1,12 @@
+{
+  "id": "PROJ-1",
+  "title": "Add issues_index.json for fast issue lookups by AI",
+  "type": "feature",
+  "status": "done",
+  "priority": "medium",
+  "assignee": "r.postulart@example.com",
+  "labels": ["backend"],
+  "parent": null,
+  "created": "2026-04-07T12:00:00.000Z",
+  "updated": "2026-04-07T12:05:00.000Z"
+}

@@ -126,21 +126,65 @@ async function saveConfig(config: Record<string, unknown>): Promise<void> {
   await writeJson(`${PROJECT_DIR}/config.json`, config);
 }
 
+// --- Issues Index ---
+
+const INDEX_FILE = `${PROJECT_DIR}/issues_index.json`;
+
+function issueToIndexEntry(issue: Record<string, unknown>): Record<string, unknown> {
+  const { id, title, type, status, priority, assignee, labels, parent, created, updated } = issue;
+  return { id, title, type, status, priority, assignee, labels, parent, created, updated };
+}
+
+async function writeIndex(entries: Record<string, unknown>[]): Promise<void> {
+  entries.sort((a: any, b: any) => (b.updated as string).localeCompare(a.updated as string));
+  await writeJson(INDEX_FILE, entries);
+}
+
+async function rebuildIndex(): Promise<Record<string, unknown>[]> {
+  const issuesDir = `${PROJECT_DIR}/issues`;
+  const entries: Record<string, unknown>[] = [];
+  if (await exists(issuesDir)) {
+    for await (const entry of Deno.readDir(issuesDir)) {
+      if (!entry.isDirectory) continue;
+      const issuePath = `${issuesDir}/${entry.name}/issue.json`;
+      if (await exists(issuePath)) {
+        const issue = (await readJson(issuePath)) as Record<string, unknown>;
+        entries.push(issueToIndexEntry(issue));
+      }
+    }
+  }
+  await writeIndex(entries);
+  return entries;
+}
+
+async function readIndex(): Promise<Record<string, unknown>[]> {
+  try {
+    if (await exists(INDEX_FILE)) {
+      return (await readJson(INDEX_FILE)) as Record<string, unknown>[];
+    }
+  } catch {
+    // Corrupt index — rebuild
+  }
+  return await rebuildIndex();
+}
+
+async function updateIndexEntry(issue: Record<string, unknown>): Promise<void> {
+  const entries = await readIndex();
+  const filtered = entries.filter((e: any) => e.id !== issue.id);
+  filtered.push(issueToIndexEntry(issue));
+  await writeIndex(filtered);
+}
+
+async function removeIndexEntry(id: string): Promise<void> {
+  const entries = await readIndex();
+  await writeIndex(entries.filter((e: any) => e.id !== id));
+}
+
 // --- Issues ---
 
 async function listIssues(): Promise<unknown[]> {
-  const issuesDir = `${PROJECT_DIR}/issues`;
-  if (!(await exists(issuesDir))) return [];
-
-  const issues: unknown[] = [];
-  for await (const entry of Deno.readDir(issuesDir)) {
-    if (!entry.isDirectory) continue;
-    const issuePath = `${issuesDir}/${entry.name}/issue.json`;
-    if (await exists(issuePath)) {
-      issues.push(await readJson(issuePath));
-    }
-  }
-  return issues.sort((a: any, b: any) => a.id.localeCompare(b.id, undefined, { numeric: true }));
+  const entries = await readIndex();
+  return entries.sort((a: any, b: any) => (a.id as string).localeCompare(b.id as string, undefined, { numeric: true }));
 }
 
 async function getIssue(id: string): Promise<Record<string, unknown> | null> {
@@ -194,6 +238,7 @@ async function createIssue(data: Record<string, unknown>): Promise<Record<string
 
   config.nextId = nextId + 1;
   await saveConfig(config);
+  await updateIndexEntry(issue);
 
   return issue;
 }
@@ -209,6 +254,7 @@ async function updateIssue(id: string, data: Record<string, unknown>): Promise<R
   }
   issue.updated = new Date().toISOString();
   await writeJson(path, issue);
+  await updateIndexEntry(issue);
   return issue;
 }
 
@@ -222,6 +268,7 @@ async function updateDescription(id: string, content: string): Promise<boolean> 
   const issue = (await readJson(issuePath)) as Record<string, unknown>;
   issue.updated = new Date().toISOString();
   await writeJson(issuePath, issue);
+  await updateIndexEntry(issue);
   return true;
 }
 
@@ -255,6 +302,7 @@ async function addComment(id: string, data: Record<string, unknown>): Promise<Re
   const issue = (await readJson(issuePath)) as Record<string, unknown>;
   issue.updated = new Date().toISOString();
   await writeJson(issuePath, issue);
+  await updateIndexEntry(issue);
 
   return comment;
 }
@@ -263,6 +311,7 @@ async function deleteIssue(id: string): Promise<boolean> {
   const dir = `${PROJECT_DIR}/issues/${id}`;
   if (!(await exists(dir))) return false;
   await Deno.remove(dir, { recursive: true });
+  await removeIndexEntry(id);
   return true;
 }
 
@@ -448,6 +497,11 @@ async function handleApi(method: string, path: string, req: Request): Promise<Re
     return comment ? json(comment, 201) : error("Not found", 404);
   }
 
+  if (path === "/api/issues/rebuild-index" && method === "POST") {
+    const entries = await rebuildIndex();
+    return json({ ok: true, count: entries.length });
+  }
+
   // Wiki
   if (path === "/api/wiki" && method === "GET") {
     return json(await getWikiIndex());
@@ -627,6 +681,11 @@ async function syncSkills() {
 await syncSkills();
 
 // --- Start server ---
+
+// Ensure issues index exists on startup
+if (!(await exists(INDEX_FILE))) {
+  await rebuildIndex();
+}
 
 console.log(`\n  🚀 Project Manager running at http://localhost:${PORT}`);
 console.log(`  📁 Project dir: ${PROJECT_DIR}\n`);

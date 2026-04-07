@@ -3,21 +3,20 @@
 
 ## GOLDEN RULES (never skip, even after long conversations)
 
-1. **EVERY task that changes files → create .project issue FIRST**
-2. **EVERY completed issue → update wiki BEFORE marking done** (solution log + docs)
-3. **EVERY commit → include ticket ID**: `fix(module): description [PROJ-5]`
-4. **EVERY todo list → must include "document in wiki" step before "mark done"**
+1. **Features, bugs, and refactors → create .project issue FIRST** (trivial edits like typos don't need one)
+2. **Completed issues → update wiki BEFORE marking done** (unless labeled "skip-docs")
+3. **Include ticket ID in commits**: `fix(module): description [PROJ-5]`
+4. **Ask the user before marking done** — don't assume the task is finished
 
-Violating these rules breaks the audit trail. No exceptions for "quick fixes".
+Hooks enforce rules 1 and 2 automatically. If you get blocked, follow the hook's instructions.
 
 ### Before ANY Implementation
 
-Stop. Answer these before writing code:
-- [ ] Is there a `.project` issue for this? If not → `/create-issue` NOW
-- [ ] Is the issue status set to `in-progress`?
-- [ ] Does my todo list include "document in wiki" as a step BEFORE marking done?
+Decide: does this task need an issue?
+- **YES** (create issue first): features, bugfixes, refactors, config changes, anything non-trivial
+- **NO** (just do it): answering questions, typos, formatting, trivial edits, research
 
-If any answer is "no", fix it before proceeding.
+If yes: read `.project/config.json`, create the issue, set to `in-progress`, then start coding.
 
 ## MANDATORY Workflow (exact sequence, never skip or reorder)
 
@@ -57,6 +56,39 @@ Before starting any work, check `.project/wiki/pages/` for steering files (pages
 
 To check: read `.project/wiki/_index.json`, find pages with `"parent": "steering"`, then read each `.project/wiki/pages/{slug}.md`.
 
+## When Issues Are Needed (and When Not)
+
+**Needs an issue** (changes files):
+- Building a feature, fixing a bug, refactoring code
+- Changing configuration, adding dependencies
+- Any task where files are created, modified, or deleted
+
+**Does NOT need an issue** (read-only):
+- Answering questions: "how does the payment flow work?"
+- Explaining code: "what does this function do?"
+- Research: "which files handle authentication?"
+- Code review without changes
+
+**But questions CAN trigger wiki updates:** If you answer a question and realize the answer should be documented (architecture decisions, non-obvious patterns, gotchas), update the wiki even without an issue.
+
+### When NOT to Mark Done
+
+Keep the issue `in-progress` while the user is still iterating.
+
+**When you think you're done with a task, ASK the user:**
+> "I've completed [summary]. Shall I mark [ISSUE-ID] as done and update the documentation?"
+
+Only mark `done` when:
+- The user explicitly confirms they're satisfied
+- The user moves to a completely different topic
+
+Do NOT mark done after implementing — always ask first. The user will often say "make it red", "also add X", "that's broken" — these are all part of the same in-progress issue.
+
+**After user confirms done:**
+1. Run `/document-completion` to update wiki
+2. Add wiki links as comment on the issue
+3. THEN mark the issue as done
+
 ## Issue Tracking Details
 
 ### New Ticket or Same Ticket?
@@ -76,7 +108,7 @@ To check: read `.project/wiki/_index.json`, find pages with `"parent": "steering
 ### Before Starting Work
 
 1. Read `.project/config.json` for project prefix and issue counter
-2. Search `.project/issues/*/issue.json` for existing matching ticket
+2. Read `.project/issues_index.json` to search for existing matching ticket (fall back to scanning `.project/issues/*/issue.json` if missing)
 3. If exists: read `issue.json`, `description.md`, and `comments/*.json` for full context
 4. If not: create one with detailed `description.md`
 
@@ -131,6 +163,25 @@ Include in `description.md`:
 }
 ```
 
+### .project/issues_index.json
+Central index of all issues, sorted by `updated` descending. Read this file instead of scanning all issue directories. Maintained automatically by the server and skills.
+```json
+[
+  {
+    "id": "PROJ-1",
+    "title": "Short description",
+    "type": "feature",
+    "status": "in-progress",
+    "priority": "medium",
+    "assignee": "email@example.com",
+    "labels": ["backend"],
+    "parent": null,
+    "created": "2026-03-25T10:00:00.000Z",
+    "updated": "2026-03-25T10:00:00.000Z"
+  }
+]
+```
+
 ## Available Skills
 
 - `/create-issue <title>` — Create a new issue
@@ -140,6 +191,7 @@ Include in `description.md`:
 - `/review-ticket <ID>` — Review a ticket's complete history
 - `/standup` — Summarize recent activity
 - `/wiki-update <title>` — Create or update a wiki page
+- `/rebuild-index` — Rebuild issues index from issue files
 - `/document-completion` — Document completed work in wiki **(use this for step 5)**
 
 ## Commit Messages

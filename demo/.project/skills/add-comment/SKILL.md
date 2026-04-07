@@ -17,3 +17,4 @@ Add a comment to an existing issue.
    - text: $ARGUMENTS (everything after the issue ID)
    - created timestamp
 5. Update `issue.json` updated timestamp
+6. **Update issues index**: Read `.project/issues_index.json` (create as `[]` if missing). Replace the entry with matching `id` (or add if missing) using all fields from `issue.json`. Sort by `updated` descending. Write back.

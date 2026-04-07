@@ -8,7 +8,7 @@ Generate a standup summary of recent project activity.
 
 ## Steps
 
-1. Read all issues from `.project/issues/*/issue.json`
+1. Read `.project/issues_index.json` for all issues (fall back to scanning `.project/issues/*/issue.json` if missing)
 2. Find issues updated in the last 24 hours
 3. Check `git log --oneline --since="24 hours ago"` for recent commits
 4. Summarize in this format:

@@ -5,6 +5,30 @@
       "title": "Steering Files",
       "order": 1,
       "parent": null
+    },
+    {
+      "slug": "solutions",
+      "title": "Solutions",
+      "order": 2,
+      "parent": null
+    },
+    {
+      "slug": "solutions-backend",
+      "title": "Solutions — Backend",
+      "order": 1,
+      "parent": "solutions"
+    },
+    {
+      "slug": "technical",
+      "title": "Technical Docs",
+      "order": 3,
+      "parent": null
+    },
+    {
+      "slug": "technical-issues-index",
+      "title": "Technical — Issues Index",
+      "order": 1,
+      "parent": "technical"
     }
   ]
 }

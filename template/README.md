@@ -107,6 +107,33 @@ Claude reads these before every task and follows them.
 | `/wiki-update <title>` | Create or update a wiki page |
 | `/document-completion` | Auto-document completed work in the wiki |
 
+## Enforcement Hooks
+
+The tracker installs two Claude Code hooks that enforce the workflow automatically. These run at the harness level, so they can't be forgotten or ignored, even in long conversations.
+
+| Hook | Trigger | What it does |
+|------|---------|-------------|
+| `require-issue.sh` | Every Edit/Write | Reminds Claude to decide if an issue is needed. Blocks once, then allows if Claude decides it's trivial. |
+| `require-docs.sh` | Marking issue as done | Blocks setting status to "done" unless wiki docs exist or issue has "skip-docs" label. |
+
+**How it feels in practice:**
+
+```
+You: "add a contact form"
+Claude: → tries to edit → hook asks "do you need an issue?"
+Claude: → creates issue, sets in-progress → continues working
+         ...implements...
+Claude: "I've completed the form. Shall I mark PROJ-3 as done?"
+You: "yes"
+Claude: → writes wiki docs → marks done ✅
+
+You: "fix the typo on line 12"
+Claude: → hook asks "do you need an issue?"
+Claude: → decides: trivial fix, no issue needed → fixes directly ✅
+```
+
+Hooks are installed in `.claude/hooks/` and configured in `.claude/settings.json`. They skip `.project/` files, `.claude/` files, and config files automatically.
+
 ## Folder Structure
 
 ```
@@ -160,16 +187,6 @@ Claude reads these before every task and follows them.
 | GET/POST | `/api/skills` | List skills / sync to .claude |
 | GET/PUT/DELETE | `/api/skills/:slug` | Skill CRUD |
 | GET | `/api/boards` | Board configurations |
-
-## Roadmap
-
-- [ ] **S3/static hosting** — deploy the UI for non-dev team members (PMs, stakeholders)
-- [ ] **Docs branch sync** — UI edits commit to a `docs` branch, merged into `main` by devs
-- [ ] **Notifications** — GitHub Actions watching for status changes, posting to Slack
-- [ ] **Multi-repo dashboard** — aggregate `.project/` data across repositories
-- [ ] **Templates** — issue and wiki templates for common patterns
-- [ ] **npm/brew package** — `npx claude-project-tracker init`
-- [ ] **VS Code extension** — sidebar panel for issues and wiki
 
 ## License
 

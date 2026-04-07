@@ -59,6 +59,13 @@ Add wiki pages under "Steering Files" to control how Claude works:
 - Coding standards, architecture decisions, conventions
 - Claude reads these before every task
 
+### Enforcement Hooks
+
+Two hooks in `.claude/hooks/` ensure the workflow is followed:
+
+- **`require-issue.sh`** — Asks Claude to decide if an issue is needed before editing files. Features/bugs need one, typos don't.
+- **`require-docs.sh`** — Blocks marking an issue as "done" without wiki documentation. Add "skip-docs" label to bypass for trivial fixes.
+
 ### Customize
 
 - **Add team members**: edit `config.json` → `team` array

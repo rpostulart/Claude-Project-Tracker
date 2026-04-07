@@ -18,7 +18,8 @@ Create a new issue in the project tracker.
    - created/updated timestamps
 4. Create `description.md` with the issue title as heading
 5. Increment the issue counter in config.json
-6. Report the created issue ID
+6. **Update issues index**: Read `.project/issues_index.json` (create as `[]` if missing). Add an entry with: `id`, `title`, `type`, `status`, `priority`, `assignee`, `labels`, `parent`, `created`, `updated`. Sort by `updated` descending. Write back.
+7. Report the created issue ID
 
 ## Example
 
