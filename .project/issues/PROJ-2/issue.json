@@ -1,0 +1,12 @@
+{
+  "id": "PROJ-2",
+  "title": "Simplify wiki doc types and fix parent nesting",
+  "type": "feature",
+  "status": "done",
+  "priority": "medium",
+  "assignee": "r.postulart@example.com",
+  "labels": ["docs"],
+  "parent": null,
+  "created": "2026-04-07T13:00:00.000Z",
+  "updated": "2026-04-07T13:10:00.000Z"
+}

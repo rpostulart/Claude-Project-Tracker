@@ -1,7 +1,7 @@
 {
   "name": "Claude Project Tracker",
   "prefix": "PROJ",
-  "nextId": 2,
+  "nextId": 3,
   "statuses": ["backlog", "todo", "in-progress", "review", "done"],
   "types": ["feature", "bug", "task", "epic"],
   "priorities": ["critical", "high", "medium", "low"],

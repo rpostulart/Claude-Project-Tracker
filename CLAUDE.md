@@ -26,24 +26,21 @@ If yes: read `.project/config.json`, create the issue, set to `in-progress`, the
 3. Implement                  → code changes, add comments as you work
 4. Summary comment            → list all changes and files modified
 5. ⛔ DOCUMENT IN WIKI ⛔     → BLOCKING: must happen before step 7
-   - Always: Solution Log     → /document-completion
-   - If architecture changed: Technical Docs
-   - If user-facing:          User Guide
-   - If non-obvious decision: Decision Record
+   - If user-facing:          Functional Doc   → /document-completion
+   - If architecture changed: Technical Doc    → /document-completion
+   - If non-obvious decision: Decision Record  → /document-completion
 6. Link wiki in issue         → add comment with wiki page links
 7. Mark done                  → only after ALL above are complete
 ```
 
-**Step 5 is non-negotiable.** This is the most commonly skipped step. If you find yourself about to mark an issue as done, STOP and check: did you run `/document-completion`?
+**Step 5 is non-negotiable.** At least one doc type should be created per issue. If you find yourself about to mark an issue as done, STOP and check: did you run `/document-completion`?
 
 ### Definition of Done Checklist
 
 An issue may ONLY be marked as `done` when ALL of these are complete:
 - [ ] Code changes implemented and working
 - [ ] Summary comment added to issue
-- [ ] Wiki Solution Log entry created
-- [ ] Technical docs updated (if architecture changed)
-- [ ] User Guide updated (if user-facing change)
+- [ ] Wiki documented via `/document-completion` (functional, technical, and/or decisions)
 - [ ] Wiki page links added to issue comment
 
 If ANY checkbox is incomplete, the issue status MUST remain `review`.

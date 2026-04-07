@@ -56,7 +56,7 @@ if [ -d "$ISSUE_DIR/comments" ]; then
   for comment_file in "$ISSUE_DIR"/comments/*.json; do
     [ -f "$comment_file" ] || continue
     # Look for explicit documentation markers, not just the word "wiki"
-    if grep -q 'solution.log\|Solution Log\|documented in wiki\|wiki.*updated\|/document-completion' "$comment_file"; then
+    if grep -q 'documented in wiki\|Documented in wiki\|wiki.*updated\|/document-completion\|[Ff]unctional:\|[Tt]echnical:\|[Dd]ecision' "$comment_file"; then
       WIKI_DOCUMENTED=true
       break
     fi
@@ -79,8 +79,8 @@ if [ "$WIKI_DOCUMENTED" = false ]; then
 ⚠️ Marking $ISSUE_ID as done — but no wiki documentation found.
 
 Decide if documentation is needed:
-- Feature or architecture change → run /document-completion (solution log + technical docs)
-- User-facing change → update User Guide in wiki
+- User-facing change → run /document-completion (functional doc)
+- Architecture change → run /document-completion (technical doc)
 - Trivial fix → add label "skip-docs" to the issue and retry
 
 To skip docs for this issue, add "skip-docs" to the labels array in issue.json first.

@@ -1,0 +1,6 @@
+{
+  "id": "002",
+  "author": "Claude Code",
+  "content": "Implementation complete:\n- Rewrote document-completion skill: 3 doc types (functional/technical/decisions), parent nesting enforced, solution log removed\n- Updated CLAUDE.md workflow step 5 and definition of done\n- Updated require-docs.sh hook to match new doc type markers\n- Synced all templates\n\nDocumented in wiki:\n- Functional: functional-wiki-docs (how the new doc system works)\n- Decision: decisions (why we dropped solution logs)",
+  "created": "2026-04-07T13:10:00.000Z"
+}

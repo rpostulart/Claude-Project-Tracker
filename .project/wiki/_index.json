@@ -7,16 +7,16 @@
       "parent": null
     },
     {
-      "slug": "solutions",
-      "title": "Solutions",
+      "slug": "functional",
+      "title": "Functional Docs",
       "order": 2,
       "parent": null
     },
     {
-      "slug": "solutions-backend",
-      "title": "Solutions — Backend",
+      "slug": "functional-wiki-docs",
+      "title": "Wiki Documentation System",
       "order": 1,
-      "parent": "solutions"
+      "parent": "functional"
     },
     {
       "slug": "technical",
@@ -26,9 +26,15 @@
     },
     {
       "slug": "technical-issues-index",
-      "title": "Technical — Issues Index",
+      "title": "Issues Index",
       "order": 1,
       "parent": "technical"
+    },
+    {
+      "slug": "decisions",
+      "title": "Decision Records",
+      "order": 4,
+      "parent": null
     }
   ]
 }
