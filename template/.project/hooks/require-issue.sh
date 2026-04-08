@@ -11,7 +11,7 @@ fi
 
 # Always allow: .project files, .claude files, config files
 case "$FILE_PATH" in
-  */.project/*|*/.claude/*) exit 0 ;;
+  */.project/*|.project/*|*/.claude/*|.claude/*) exit 0 ;;
 esac
 BASENAME=$(basename "$FILE_PATH" 2>/dev/null)
 case "$BASENAME" in

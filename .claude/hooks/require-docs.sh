@@ -9,7 +9,7 @@ FILE_PATH=$(echo "$INPUT" | grep -o '"file_path"[[:space:]]*:[[:space:]]*"[^"]*"
 
 # Only check issue.json files
 case "$FILE_PATH" in
-  */.project/issues/*/issue.json) ;;
+  */.project/issues/*/issue.json|.project/issues/*/issue.json) ;;
   *) exit 0 ;;
 esac
 

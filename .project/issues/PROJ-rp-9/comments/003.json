@@ -1,0 +1,6 @@
+{
+  "id": "003",
+  "author": "Claude Code",
+  "content": "Found additional bug: the case patterns in both hooks used `*/.project/*` which requires a `/` before `.project` — so relative paths like `.project/issues/...` didn't match the allowlist. This caused the chicken-and-egg problem where creating `issue.json` was blocked by the hook that checks for in-progress issues.\n\nFixed both hooks to also match relative paths:\n- `require-issue.sh`: added `.project/*` and `.claude/*` patterns\n- `require-docs.sh`: added `.project/issues/*/issue.json` relative pattern\n\nSynced to `.claude/hooks/`.",
+  "created": "2026-04-08T12:05:00.000Z"
+}
