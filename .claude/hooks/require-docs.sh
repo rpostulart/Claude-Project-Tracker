@@ -22,10 +22,21 @@ if ! echo "$INPUT" | grep -q 'done'; then
   exit 0
 fi
 
-# Find repo root and issue
+# Find repo/project root: try git first, then walk up looking for .project/
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 if [ -z "$REPO_ROOT" ]; then
-  exit 0
+  # Walk up from current directory to find .project/
+  SEARCH_DIR="$(pwd)"
+  while [ "$SEARCH_DIR" != "/" ]; do
+    if [ -d "$SEARCH_DIR/.project" ]; then
+      REPO_ROOT="$SEARCH_DIR"
+      break
+    fi
+    SEARCH_DIR=$(dirname "$SEARCH_DIR")
+  done
+  if [ -z "$REPO_ROOT" ]; then
+    exit 0
+  fi
 fi
 
 PROJECT_DIR="$REPO_ROOT/.project"
@@ -56,7 +67,7 @@ if [ -d "$ISSUE_DIR/comments" ]; then
   for comment_file in "$ISSUE_DIR"/comments/*.json; do
     [ -f "$comment_file" ] || continue
     # Look for explicit documentation markers, not just the word "wiki"
-    if grep -q 'solution.log\|Solution Log\|documented in wiki\|wiki.*updated\|/document-completion' "$comment_file"; then
+    if grep -q 'documented in wiki\|Documented in wiki\|wiki.*updated\|/document-completion\|[Ff]unctional:\|[Tt]echnical:\|[Dd]ecision' "$comment_file"; then
       WIKI_DOCUMENTED=true
       break
     fi
@@ -79,8 +90,8 @@ if [ "$WIKI_DOCUMENTED" = false ]; then
 ⚠️ Marking $ISSUE_ID as done — but no wiki documentation found.
 
 Decide if documentation is needed:
-- Feature or architecture change → run /document-completion (solution log + technical docs)
-- User-facing change → update User Guide in wiki
+- User-facing change → run /document-completion (functional doc)
+- Architecture change → run /document-completion (technical doc)
 - Trivial fix → add label "skip-docs" to the issue and retry
 
 To skip docs for this issue, add "skip-docs" to the labels array in issue.json first.

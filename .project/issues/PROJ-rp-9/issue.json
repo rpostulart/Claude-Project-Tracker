@@ -1,0 +1,13 @@
+{
+  "id": "PROJ-rp-9",
+  "title": "Hooks silently skip enforcement when no git repo exists",
+  "type": "bug",
+  "status": "in-progress",
+  "priority": "high",
+  "assignee": "r.postulart@example.com",
+  "labels": ["devops"],
+  "parent": null,
+  "related": [],
+  "created": "2026-04-08T12:00:00.000Z",
+  "updated": "2026-04-08T12:00:00.000Z"
+}

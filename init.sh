@@ -41,11 +41,13 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# --- Find repo root ---
+# --- Find or create repo root ---
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "")
 if [[ -z "$REPO_ROOT" ]]; then
-  echo "Warning: Not in a git repository. Using current directory."
   REPO_ROOT=$(pwd)
+  echo "  Not in a git repository. Initializing one..."
+  git init --quiet "$REPO_ROOT"
+  echo "  Created git repo at $REPO_ROOT"
 fi
 cd "$REPO_ROOT"
 

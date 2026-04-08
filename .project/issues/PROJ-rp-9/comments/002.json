@@ -1,0 +1,6 @@
+{
+  "id": "002",
+  "author": "Claude Code",
+  "content": "## Changes made\n\n### `init.sh`\n- Replaced the warning-only behavior when not in a git repo with `git init --quiet` to create one automatically\n- This ensures hooks always have a git root to find `.project/`\n\n### `template/.project/hooks/require-issue.sh`\n- Added directory-walking fallback when `git rev-parse` fails\n- Walks up from `$(pwd)` looking for `.project/` directory\n- Only exits 0 (allow-all) if neither git nor `.project/` can be found\n\n### `template/.project/hooks/require-docs.sh`\n- Same directory-walking fallback added\n\n### `.claude/hooks/` (this repo)\n- Synced both updated hook scripts\n\n## Root cause\nBoth hooks used `git rev-parse --show-toplevel` and silently allowed everything (`exit 0`) when no git repo existed. The init script only printed a warning but didn't create a repo.",
+  "created": "2026-04-08T12:01:00.000Z"
+}

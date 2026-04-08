@@ -18,10 +18,21 @@ case "$BASENAME" in
   CLAUDE.md|.gitignore|.env|.env.*|package-lock.json|*.lock) exit 0 ;;
 esac
 
-# Find repo root
+# Find repo/project root: try git first, then walk up looking for .project/
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 if [ -z "$REPO_ROOT" ]; then
-  exit 0
+  # Walk up from current directory to find .project/
+  SEARCH_DIR="$(pwd)"
+  while [ "$SEARCH_DIR" != "/" ]; do
+    if [ -d "$SEARCH_DIR/.project" ]; then
+      REPO_ROOT="$SEARCH_DIR"
+      break
+    fi
+    SEARCH_DIR=$(dirname "$SEARCH_DIR")
+  done
+  if [ -z "$REPO_ROOT" ]; then
+    exit 0
+  fi
 fi
 
 PROJECT_DIR="$REPO_ROOT/.project"

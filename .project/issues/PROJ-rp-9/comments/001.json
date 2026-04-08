@@ -1,0 +1,6 @@
+{
+  "id": "001",
+  "author": "Claude Code",
+  "content": "Starting work. Root cause: both hooks have `REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)` followed by `if [ -z \"$REPO_ROOT\" ]; then exit 0; fi` — no git repo means no enforcement.\n\nFix plan:\n1. `init.sh`: add `git init` when not in a git repo\n2. Both hooks: add fallback to walk up from CWD looking for `.project/`\n3. Sync template",
+  "created": "2026-04-08T12:00:00.000Z"
+}
