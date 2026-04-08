@@ -9,6 +9,7 @@ const PROJECT_DIR = resolve(args.project || Deno.env.get("PROJECT_DIR") || new U
 const PORT = parseInt(args.port || Deno.env.get("PORT") || "8000");
 const UI_DIR = resolve(new URL(".", import.meta.url).pathname, "ui");
 const CURRENT_USER = Deno.env.get("PROJECT_USER") || "";
+const CURRENT_SLUG = Deno.env.get("PROJECT_SLUG") || "";
 
 async function loadEnv() {
   try {
@@ -126,6 +127,37 @@ async function saveConfig(config: Record<string, unknown>): Promise<void> {
   await writeJson(`${PROJECT_DIR}/config.json`, config);
 }
 
+// --- User Slug Resolution ---
+
+async function getCurrentUserSlug(): Promise<string> {
+  if (CURRENT_SLUG) return CURRENT_SLUG;
+
+  if (CURRENT_USER) {
+    const config = await getConfig();
+    const team = (config.team as { email: string; slug?: string }[]) || [];
+    const member = team.find((m) => m.email === CURRENT_USER);
+    if (member?.slug) return member.slug;
+  }
+
+  throw new Error(
+    "No user slug configured. Set PROJECT_SLUG in .env or add a 'slug' field to your team entry in .project/config.json. " +
+    "Run init.sh --update to set up your identity."
+  );
+}
+
+async function getUserCounter(slug: string): Promise<{ nextId: number }> {
+  const counterPath = `${PROJECT_DIR}/counters/${slug}.json`;
+  if (await exists(counterPath)) {
+    return (await readJson(counterPath)) as { nextId: number };
+  }
+  return { nextId: 1 };
+}
+
+async function saveUserCounter(slug: string, counter: { nextId: number }): Promise<void> {
+  await ensureDir(`${PROJECT_DIR}/counters`);
+  await writeJson(`${PROJECT_DIR}/counters/${slug}.json`, counter);
+}
+
 // --- Issues ---
 
 async function listIssues(): Promise<unknown[]> {
@@ -170,9 +202,10 @@ async function getIssue(id: string): Promise<Record<string, unknown> | null> {
 
 async function createIssue(data: Record<string, unknown>): Promise<Record<string, unknown>> {
   const config = await getConfig();
-  const nextId = config.nextId as number;
   const prefix = config.prefix as string;
-  const id = `${prefix}-${nextId}`;
+  const slug = await getCurrentUserSlug();
+  const counter = await getUserCounter(slug);
+  const id = `${prefix}-${slug}-${counter.nextId}`;
 
   const issue = {
     id,
@@ -192,8 +225,8 @@ async function createIssue(data: Record<string, unknown>): Promise<Record<string
   await writeJson(`${dir}/issue.json`, issue);
   await Deno.writeTextFile(`${dir}/description.md`, (data.description as string) || `# ${issue.title}\n`);
 
-  config.nextId = nextId + 1;
-  await saveConfig(config);
+  counter.nextId++;
+  await saveUserCounter(slug, counter);
 
   return issue;
 }
@@ -400,7 +433,7 @@ async function handleRequest(req: Request): Promise<Response> {
 async function handleApi(method: string, path: string, req: Request): Promise<Response> {
   // Current user
   if (path === "/api/me" && method === "GET") {
-    return json({ email: CURRENT_USER });
+    return json({ email: CURRENT_USER, slug: CURRENT_SLUG });
   }
 
   // Config
@@ -418,7 +451,7 @@ async function handleApi(method: string, path: string, req: Request): Promise<Re
     return json(await createIssue(data), 201);
   }
 
-  const issueMatch = path.match(/^\/api\/issues\/([A-Z]+-\d+)$/);
+  const issueMatch = path.match(/^\/api\/issues\/([A-Z][A-Za-z0-9-]+-\d+)$/);
   if (issueMatch) {
     const id = issueMatch[1];
     if (method === "GET") {
@@ -435,13 +468,13 @@ async function handleApi(method: string, path: string, req: Request): Promise<Re
     }
   }
 
-  const descMatch = path.match(/^\/api\/issues\/([A-Z]+-\d+)\/description$/);
+  const descMatch = path.match(/^\/api\/issues\/([A-Z][A-Za-z0-9-]+-\d+)\/description$/);
   if (descMatch && method === "PUT") {
     const { content } = await req.json();
     return (await updateDescription(descMatch[1], content)) ? json({ ok: true }) : error("Not found", 404);
   }
 
-  const commentMatch = path.match(/^\/api\/issues\/([A-Z]+-\d+)\/comments$/);
+  const commentMatch = path.match(/^\/api\/issues\/([A-Z][A-Za-z0-9-]+-\d+)\/comments$/);
   if (commentMatch && method === "POST") {
     const data = await req.json();
     const comment = await addComment(commentMatch[1], data);

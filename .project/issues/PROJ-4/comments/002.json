@@ -1,0 +1,6 @@
+{
+  "id": "002",
+  "author": "Claude Code",
+  "content": "Documented in wiki:\n- Technical doc: [Multi-User Issue IDs](/wiki/technical-multi-user-ids)\n- Decision record: [Per-user slugs for issue ID collision prevention](/wiki/decisions)",
+  "created": "2026-04-08T12:31:00.000Z"
+}

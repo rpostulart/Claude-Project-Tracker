@@ -11,6 +11,7 @@ TEMPLATE_DIR="template"
 # --- Parse arguments ---
 PREFIX=""
 EMAIL=""
+SLUG=""
 PROJECT_NAME=""
 UPDATE_MODE=false
 
@@ -18,17 +19,19 @@ while [[ $# -gt 0 ]]; do
   case $1 in
     --prefix) PREFIX="$2"; shift 2 ;;
     --email)  EMAIL="$2"; shift 2 ;;
+    --slug)   SLUG="$2"; shift 2 ;;
     --name)   PROJECT_NAME="$2"; shift 2 ;;
     --repo)   REPO_URL="$2"; shift 2 ;;
     --update) UPDATE_MODE=true; shift ;;
     -h|--help)
-      echo "Usage: ./init.sh [--prefix PREFIX] [--email EMAIL] [--name NAME] [--repo URL] [--update]"
+      echo "Usage: ./init.sh [--prefix PREFIX] [--email EMAIL] [--slug SLUG] [--name NAME] [--repo URL] [--update]"
       echo ""
       echo "Bootstraps .project/ into the current git repo."
       echo ""
       echo "Options:"
       echo "  --prefix  Issue prefix (default: first 4 chars of dir name, uppercase)"
       echo "  --email   Your email (default: git config user.email)"
+      echo "  --slug    Your unique 2-3 letter identifier for issue IDs (e.g. 'rp')"
       echo "  --name    Project name (default: directory name)"
       echo "  --repo    Git repo URL for the template (default: $REPO_URL)"
       echo "  --update  Update system files (server, UI, skills) while preserving your data"
@@ -50,7 +53,69 @@ cd "$REPO_ROOT"
 DIR_NAME=$(basename "$REPO_ROOT")
 PROJECT_NAME="${PROJECT_NAME:-$DIR_NAME}"
 PREFIX="${PREFIX:-$(echo "${DIR_NAME:0:4}" | tr '[:lower:]' '[:upper:]')}"
-EMAIL="${EMAIL:-$(git config user.email 2>/dev/null || echo "")}"
+
+# --- User identity (interactive) ---
+DEFAULT_EMAIL=$(git config user.email 2>/dev/null || echo "")
+DEFAULT_NAME=$(git config user.name 2>/dev/null || echo "")
+
+# Check if .env already has slug (for --update mode)
+EXISTING_SLUG=""
+EXISTING_EMAIL=""
+if [[ -f .env ]]; then
+  EXISTING_SLUG=$(grep '^PROJECT_SLUG=' .env 2>/dev/null | cut -d= -f2 | tr -d '[:space:]')
+  EXISTING_EMAIL=$(grep '^PROJECT_USER=' .env 2>/dev/null | cut -d= -f2 | tr -d '[:space:]')
+fi
+
+# Suggest slug from initials (first letter of each word in name)
+SUGGESTED_SLUG=$(echo "$DEFAULT_NAME" | awk '{for(i=1;i<=NF;i++) printf tolower(substr($i,1,1))}')
+# Ensure at least 2 chars
+if [[ ${#SUGGESTED_SLUG} -lt 2 ]]; then
+  SUGGESTED_SLUG=$(echo "${DEFAULT_EMAIL%%@*}" | tr '[:upper:]' '[:lower:]' | head -c3)
+fi
+
+# Only prompt if not provided via args and not already in .env
+if [[ -z "$EMAIL" ]]; then
+  if [[ -n "$EXISTING_EMAIL" ]]; then
+    EMAIL="$EXISTING_EMAIL"
+  elif [[ -t 0 ]]; then
+    # Interactive terminal — prompt
+    echo ""
+    echo "  Setting up your user identity..."
+    read -p "  Email [${DEFAULT_EMAIL}]: " EMAIL
+    EMAIL="${EMAIL:-$DEFAULT_EMAIL}"
+  else
+    EMAIL="$DEFAULT_EMAIL"
+  fi
+fi
+
+if [[ -z "$SLUG" ]]; then
+  if [[ -n "$EXISTING_SLUG" ]]; then
+    SLUG="$EXISTING_SLUG"
+  elif [[ -t 0 ]]; then
+    # Read existing slugs from config.json to check uniqueness
+    EXISTING_SLUGS=""
+    if [[ -f .project/config.json ]]; then
+      EXISTING_SLUGS=$(grep '"slug"' .project/config.json 2>/dev/null | sed 's/.*"slug"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/' | tr '\n' ' ')
+    fi
+    if [[ -n "$EXISTING_SLUGS" ]]; then
+      echo "  Existing team slugs: $EXISTING_SLUGS"
+    fi
+    read -p "  Your unique slug (2-4 lowercase letters, e.g. 'rp') [${SUGGESTED_SLUG}]: " SLUG
+    SLUG="${SLUG:-$SUGGESTED_SLUG}"
+    # Validate slug format
+    if ! echo "$SLUG" | grep -qE '^[a-z]{2,4}$'; then
+      echo "  Error: Slug must be 2-4 lowercase letters (got: '$SLUG')"
+      exit 1
+    fi
+    # Check uniqueness
+    if echo " $EXISTING_SLUGS " | grep -q " $SLUG "; then
+      echo "  Error: Slug '$SLUG' is already taken by another team member"
+      exit 1
+    fi
+  else
+    SLUG="$SUGGESTED_SLUG"
+  fi
+fi
 
 echo ""
 echo "  .project — Git-Native Project Management"
@@ -59,6 +124,7 @@ echo ""
 echo "  Project:  $PROJECT_NAME"
 echo "  Prefix:   $PREFIX"
 echo "  Email:    ${EMAIL:-<not set>}"
+echo "  Slug:     ${SLUG:-<not set>}"
 echo "  Location: $REPO_ROOT/.project/"
 echo ""
 
@@ -97,8 +163,10 @@ else
 fi
 echo "  Installed .project/"
 
-# --- Write config.json (only if it doesn't exist, to preserve nextId) ---
-if [[ ! -f .project/config.json ]] || [[ $(cat .project/config.json | grep -c '"nextId"') -eq 0 ]]; then
+# --- Write config.json ---
+if [[ ! -f .project/config.json ]]; then
+  # Fresh install: create config with team entry including slug
+  USER_NAME=$(echo "$EMAIL" | cut -d@ -f1)
   cat > .project/config.json << JSONEOF
 {
   "name": "$PROJECT_NAME",
@@ -108,14 +176,66 @@ if [[ ! -f .project/config.json ]] || [[ $(cat .project/config.json | grep -c '"
   "types": ["feature", "bug", "task", "epic"],
   "priorities": ["critical", "high", "medium", "low"],
   "labels": ["ui", "backend", "docs", "security", "performance", "devops"],
-  "team": [$(if [[ -n "$EMAIL" ]]; then echo "
-    {\"name\": \"$(echo "$EMAIL" | cut -d@ -f1)\", \"email\": \"$EMAIL\"}"; fi)
+  "team": [$(if [[ -n "$EMAIL" && -n "$SLUG" ]]; then echo "
+    {\"name\": \"$USER_NAME\", \"email\": \"$EMAIL\", \"slug\": \"$SLUG\"}"; fi)
   ]
 }
 JSONEOF
+  # Create per-user counter file
+  if [[ -n "$SLUG" ]]; then
+    mkdir -p .project/counters
+    echo "{\"nextId\": 1}" > ".project/counters/${SLUG}.json"
+    echo "  Created counter file for slug '$SLUG'"
+  fi
   echo "  Configured .project/config.json"
 else
-  echo "  Skipped config.json (already configured)"
+  # Existing config: add current user to team if not already present
+  if [[ -n "$EMAIL" && -n "$SLUG" ]]; then
+    if ! grep -q "\"slug\": \"$SLUG\"" .project/config.json 2>/dev/null; then
+      USER_NAME=$(echo "$EMAIL" | cut -d@ -f1)
+      # Add team member using python3 for reliable JSON manipulation
+      if command -v python3 &>/dev/null; then
+        python3 -c "
+import json
+with open('.project/config.json') as f:
+    config = json.load(f)
+team = config.get('team', [])
+# Check slug uniqueness
+if not any(m.get('slug') == '$SLUG' for m in team):
+    team.append({'name': '$USER_NAME', 'email': '$EMAIL', 'slug': '$SLUG'})
+    config['team'] = team
+    with open('.project/config.json', 'w') as f:
+        json.dump(config, f, indent=2)
+        f.write('\n')
+    print('  Added you to the team in config.json')
+else:
+    print('  Slug already exists in team — skipped')
+" 2>/dev/null || echo "  Warning: Could not update config.json team array — add yourself manually"
+      else
+        echo "  Warning: python3 not available to update config.json. Add yourself to team array manually."
+      fi
+      # Create per-user counter file
+      mkdir -p .project/counters
+      if [[ ! -f ".project/counters/${SLUG}.json" ]]; then
+        # Seed counter from existing nextId to avoid ID overlap with legacy issues
+        SEED_ID=1
+        if command -v python3 &>/dev/null; then
+          SEED_ID=$(python3 -c "
+import json
+with open('.project/config.json') as f:
+    config = json.load(f)
+print(config.get('nextId', 1))
+" 2>/dev/null || echo "1")
+        fi
+        echo "{\"nextId\": $SEED_ID}" > ".project/counters/${SLUG}.json"
+        echo "  Created counter file for slug '$SLUG' (seeded at $SEED_ID)"
+      fi
+    else
+      echo "  Skipped config.json (your slug already registered)"
+    fi
+  else
+    echo "  Skipped config.json (already configured)"
+  fi
 fi
 
 # --- Symlink skills to .claude/skills/ ---
@@ -248,15 +368,32 @@ else
   echo '.env' > .gitignore
   echo "  Created .gitignore with .env"
 fi
+# Gitignore issues_index.json (it's rebuildable, prevents merge conflicts)
+if ! grep -q 'issues_index.json' .gitignore 2>/dev/null; then
+  echo '.project/issues_index.json' >> .gitignore
+  echo "  Added .project/issues_index.json to .gitignore"
+fi
 
 # --- .env ---
-if [[ -n "$EMAIL" && ! -f .env ]]; then
+if [[ ! -f .env ]]; then
   cat > .env << ENVEOF
-PROJECT_USER=$EMAIL
+PROJECT_USER=${EMAIL}
+PROJECT_SLUG=${SLUG}
 PROJECT_DIR=.project
 PORT=8000
 ENVEOF
   echo "  Created .env"
+else
+  # Add PROJECT_SLUG if missing
+  if [[ -n "$SLUG" ]] && ! grep -q '^PROJECT_SLUG=' .env 2>/dev/null; then
+    echo "PROJECT_SLUG=${SLUG}" >> .env
+    echo "  Added PROJECT_SLUG to .env"
+  fi
+  # Add PROJECT_USER if missing
+  if [[ -n "$EMAIL" ]] && ! grep -q '^PROJECT_USER=' .env 2>/dev/null; then
+    echo "PROJECT_USER=${EMAIL}" >> .env
+    echo "  Added PROJECT_USER to .env"
+  fi
 fi
 
 # --- Summary ---

@@ -1,5 +1,17 @@
 [
   {
+    "id": "PROJ-4",
+    "title": "Fix multi-user issue ID collisions by adding per-user slugs and counters",
+    "type": "feature",
+    "status": "done",
+    "priority": "high",
+    "assignee": "r.postulart@example.com",
+    "labels": ["backend"],
+    "parent": null,
+    "created": "2026-04-08T12:00:00.000Z",
+    "updated": "2026-04-08T12:31:00.000Z"
+  },
+  {
     "id": "PROJ-3",
     "title": "Fix document-completion skill: add issue ID argument and improve comment/link behavior",
     "type": "bug",

@@ -1,12 +1,39 @@
 {
   "name": "Claude Project Tracker",
   "prefix": "PROJ",
-  "nextId": 4,
-  "statuses": ["backlog", "todo", "in-progress", "review", "done"],
-  "types": ["feature", "bug", "task", "epic"],
-  "priorities": ["critical", "high", "medium", "low"],
-  "labels": ["ui", "backend", "docs", "security", "performance", "devops"],
+  "nextId": 5,
+  "statuses": [
+    "backlog",
+    "todo",
+    "in-progress",
+    "review",
+    "done"
+  ],
+  "types": [
+    "feature",
+    "bug",
+    "task",
+    "epic"
+  ],
+  "priorities": [
+    "critical",
+    "high",
+    "medium",
+    "low"
+  ],
+  "labels": [
+    "ui",
+    "backend",
+    "docs",
+    "security",
+    "performance",
+    "devops"
+  ],
   "team": [
-    {"name": "r.postulart", "email": "r.postulart@example.com"}
+    {
+      "name": "r.postulart",
+      "email": "r.postulart@example.com",
+      "slug": "rp"
+    }
   ]
 }

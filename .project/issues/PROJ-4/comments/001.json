@@ -1,0 +1,6 @@
+{
+  "id": "001",
+  "author": "Claude Code",
+  "content": "Implementation complete. Changes:\n\n- `init.sh`: Interactive user registration (email + 2-4 letter slug), validates uniqueness, stores in `.env` and config team array. `--update` mode checks for missing slug.\n- `server.ts` + `.project/server.ts`: Added `getCurrentUserSlug()`, `getUserCounter()`, `saveUserCounter()`. `createIssue()` now uses per-user counters. Updated 3 regex patterns for new ID format.\n- `.project/counters/{slug}.json`: Per-user counter files, seeded from `nextId` on migration.\n- `.gitignore`: Added `.project/issues_index.json` (rebuilt on startup).\n- Skills: Updated `create-issue` and `track-work` for new counter flow.\n- `CLAUDE.md`: Updated ID format examples and workflow docs.\n- Template synced: `server.ts`, skills, `CLAUDE.md`.\n\nAll tests passed: new IDs use `PROJ-rp-N` format, old `PROJ-N` issues still accessible, counter files work independently per user.",
+  "created": "2026-04-08T12:30:00.000Z"
+}

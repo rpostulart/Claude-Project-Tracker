@@ -31,6 +31,12 @@
       "parent": "technical"
     },
     {
+      "slug": "technical-multi-user-ids",
+      "title": "Multi-User Issue IDs",
+      "order": 2,
+      "parent": "technical"
+    },
+    {
       "slug": "decisions",
       "title": "Decision Records",
       "order": 4,

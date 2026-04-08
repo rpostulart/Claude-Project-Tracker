@@ -5,7 +5,7 @@
 
 1. **Features, bugs, and refactors → create .project issue FIRST** (trivial edits like typos don't need one)
 2. **Completed issues → update wiki BEFORE marking done** (unless labeled "skip-docs")
-3. **Include ticket ID in commits**: `fix(module): description [PROJ-5]`
+3. **Include ticket ID in commits**: `fix(module): description [PROJ-rp-5]`
 4. **Ask the user before marking done** — don't assume the task is finished
 
 Hooks enforce rules 1 and 2 automatically. If you get blocked, follow the hook's instructions.
@@ -16,7 +16,7 @@ Decide: does this task need an issue?
 - **YES** (create issue first): features, bugfixes, refactors, config changes, anything non-trivial
 - **NO** (just do it): answering questions, typos, formatting, trivial edits, research
 
-If yes: read `.project/config.json`, create the issue, set to `in-progress`, then start coding.
+If yes: read `.project/config.json`, resolve your user slug (from `PROJECT_SLUG` env var or team array), create the issue, set to `in-progress`, then start coding.
 
 ## MANDATORY Workflow (exact sequence, never skip or reorder)
 
@@ -104,10 +104,11 @@ Do NOT mark done after implementing — always ask first. The user will often sa
 
 ### Before Starting Work
 
-1. Read `.project/config.json` for project prefix and issue counter
-2. Read `.project/issues_index.json` to search for existing matching ticket (fall back to scanning `.project/issues/*/issue.json` if missing)
-3. If exists: read `issue.json`, `description.md`, and `comments/*.json` for full context
-4. If not: create one with detailed `description.md`
+1. Read `.project/config.json` for project prefix and team info
+2. Determine your user slug: check `PROJECT_SLUG` env var, or find your email in the config team array
+3. Read `.project/issues_index.json` to search for existing matching ticket (fall back to scanning `.project/issues/*/issue.json` if missing)
+4. If exists: read `issue.json`, `description.md`, and `comments/*.json` for full context
+5. If not: read `.project/counters/{slug}.json` for your next issue number, create the issue with ID `{PREFIX}-{slug}-{N}`, and increment the counter
 
 ### Writing Good Descriptions
 
@@ -137,7 +138,7 @@ Include in `description.md`:
 ### .project/issues/{ID}/issue.json
 ```json
 {
-  "id": "PROJ-1",
+  "id": "PROJ-rp-1",
   "title": "Short description",
   "type": "feature|bug|task|epic",
   "status": "backlog|todo|in-progress|review|done",
@@ -150,6 +151,8 @@ Include in `description.md`:
 }
 ```
 
+Issue IDs use the format `{PREFIX}-{slug}-{N}` where `slug` is the user's unique 2-4 letter identifier. Legacy issues may use `{PREFIX}-{N}` format (without slug).
+
 ### .project/issues/{ID}/comments/NNN.json
 ```json
 {
@@ -161,11 +164,11 @@ Include in `description.md`:
 ```
 
 ### .project/issues_index.json
-Central index of all issues, sorted by `updated` descending. Read this file instead of scanning all issue directories. Maintained automatically by the server and skills.
+Central index of all issues, sorted by `updated` descending. Read this file instead of scanning all issue directories. Maintained automatically by the server and skills. This file is gitignored and rebuilt on server startup to avoid merge conflicts.
 ```json
 [
   {
-    "id": "PROJ-1",
+    "id": "PROJ-rp-1",
     "title": "Short description",
     "type": "feature",
     "status": "in-progress",
@@ -177,6 +180,12 @@ Central index of all issues, sorted by `updated` descending. Read this file inst
     "updated": "2026-03-25T10:00:00.000Z"
   }
 ]
+```
+
+### .project/counters/{slug}.json
+Per-user issue counter. Each team member has their own counter file to avoid conflicts.
+```json
+{"nextId": 5}
 ```
 
 ## Available Skills
@@ -193,7 +202,7 @@ Central index of all issues, sorted by `updated` descending. Read this file inst
 
 ## Commit Messages
 
-Include ticket ID: `feat(module): description [PROJ-12]` | `fix(module): description [PROJ-5]`
+Include ticket ID: `feat(module): description [PROJ-rp-12]` | `fix(module): description [PROJ-rp-5]`
 
 ## MANDATORY: Sync Template After Changes
 
