@@ -30,14 +30,19 @@ Everything is plain Markdown and JSON. No database. No SaaS. No vendor lock-in. 
 curl -sL https://raw.githubusercontent.com/rpostulart/Claude-Project-Tracker/main/init.sh | bash
 
 # Or with options:
-./init.sh --prefix MYAPP --email me@example.com --name "My Project"
+./init.sh --prefix MYAPP --email me@example.com --slug rp --name "My Project"
+
+# Update an existing installation to the latest version:
+curl -sL https://raw.githubusercontent.com/rpostulart/Claude-Project-Tracker/main/init.sh | bash -s -- --update
 ```
 
+The installer prompts for your **email** and a **unique slug** (2-4 lowercase letters, e.g. `rp`). The slug is used in issue IDs to prevent collisions when multiple team members work independently.
+
 This creates:
-- `.project/` — issues, wiki, boards, skills (committed to git)
+- `.project/` — issues, wiki, boards, skills, per-user counters (committed to git)
 - `.claude/skills/` — slash commands for Claude Code
 - `CLAUDE.md` — instructions that make Claude Code track all work automatically
-- `.env` — your email and server config (gitignored)
+- `.env` — your email, slug, and server config (gitignored)
 
 ## How It Works
 
@@ -48,7 +53,7 @@ Once installed, Claude Code tracks everything without you asking:
 ```
 You: "Fix the login timeout bug"
 
-Claude: 1. Creates MYAPP-1: "Fix login timeout bug"
+Claude: 1. Creates MYAPP-rp-1: "Fix login timeout bug"
         2. Sets status to in-progress
         3. Adds comments as it works:
            - "Investigating: timeout happens in auth.ts line 42"
@@ -56,11 +61,11 @@ Claude: 1. Creates MYAPP-1: "Fix login timeout bug"
            - "Fixed by adding early return on expired tokens"
            - "Modified: src/auth.ts, src/middleware.ts"
         4. Updates wiki: Functional + Technical docs
-        5. Commits with: fix(auth): resolve login timeout [MYAPP-1]
+        5. Commits with: fix(auth): resolve login timeout [MYAPP-rp-1]
         6. Marks ticket as done
 
 Three weeks later...
-You: "The login is broken again, check MYAPP-1"
+You: "The login is broken again, check MYAPP-rp-1"
 
 Claude: Reads the full ticket history
         Sees exactly what was done, which files, what the root cause was
@@ -80,8 +85,8 @@ deno run --allow-net --allow-read --allow-write --allow-env .project/server.ts
 
 - **Kanban board** — drag-and-drop issues between columns, time filter on Done
 - **List view** — sortable, filterable table with date range and pagination
-- **Issue detail** — markdown descriptions, comments, subtasks, labels, priority
-- **Wiki** — nested pages with tree navigation, search, WYSIWYG editing
+- **Issue detail** — markdown descriptions, comments, subtasks, related issues (clickable, bidirectional), labels, priority
+- **Wiki** — nested pages with tree navigation, search, WYSIWYG editing, copy-to-clipboard for export
 - **Skills** — create and edit Claude Code skills from the browser
 
 ### Steering Files
@@ -124,7 +129,7 @@ You: "add a contact form"
 Claude: → tries to edit → hook asks "do you need an issue?"
 Claude: → creates issue, sets in-progress → continues working
          ...implements...
-Claude: "I've completed the form. Shall I mark PROJ-3 as done?"
+Claude: "I've completed the form. Shall I mark PROJ-rp-3 as done?"
 You: "yes"
 Claude: → writes wiki docs (functional/technical/decisions) → marks done ✅
 
@@ -139,13 +144,15 @@ Hooks are installed in `.claude/hooks/` and configured in `.claude/settings.json
 
 ```
 .project/
-├── config.json              # Project settings (prefix, statuses, team)
-├── issues_index.json        # Fast lookup index for all issues (auto-maintained)
+├── config.json              # Project settings (prefix, statuses, team with slugs)
+├── issues_index.json        # Fast lookup index (auto-rebuilt on startup, gitignored)
+├── counters/
+│   └── rp.json              # Per-user issue counter (one file per team member)
 ├── server.ts                # Deno server (API + web UI)
 ├── ui/                      # Web UI (vanilla JS, no build step)
 ├── issues/
-│   └── PROJ-1/
-│       ├── issue.json       # Status, priority, assignee, labels
+│   └── PROJ-rp-1/
+│       ├── issue.json       # Status, priority, assignee, labels, related
 │       ├── description.md   # What was requested, acceptance criteria, wiki links
 │       └── comments/
 │           ├── 001.json     # "Starting work on this issue"
@@ -166,13 +173,24 @@ Hooks are installed in `.claude/hooks/` and configured in `.claude/settings.json
     └── ...                  # 9 skills, synced to .claude/skills/
 ```
 
+### Multi-User Support
+
+Each team member gets a unique 2-4 letter slug (e.g. `rp`) stored in `.env` (gitignored) and registered in `config.json`'s team array. Issue IDs include the slug: `PROJ-rp-1`, `PROJ-ab-1`. Each user has their own counter file in `.project/counters/`, so different team members never conflict on issue creation — even when working offline.
+
+The `issues_index.json` is gitignored and rebuilt automatically on server startup, eliminating a second source of merge conflicts.
+
 ### Issues Index
 
-The `issues_index.json` file contains a flat array of all issue metadata, sorted by most recently updated first. AI reads this single file instead of scanning every issue directory — much faster for finding recent issues, running standups, or searching for existing tickets. It's maintained automatically by the server and skills, and rebuilds itself if missing or corrupt.
+The `issues_index.json` file contains a flat array of all issue metadata, sorted by most recently updated first. AI reads this single file instead of scanning every issue directory — much faster for finding recent issues, running standups, or searching for existing tickets. It's maintained automatically by the server and rebuilt on every startup.
+
+### Related Issues
+
+Issues can link to each other via the `related` field in `issue.json` (e.g. `"related": ["PROJ-rp-1"]`). Links are **bidirectional** — if issue A links to B, the UI automatically shows the reverse link on B. Useful for connecting bugs to the features that introduced them.
 
 ### Why Plain Files?
 
 - **One folder per issue** — atomic changes, no merge conflicts
+- **Per-user counters** — each team member writes their own counter file, zero coordination needed
 - **Comments as individual files** — append-only, conflict-free in teams
 - **Wiki nesting via `parent` field** — unlimited depth, flat on disk
 - **Everything in git** — `git diff` shows exactly what changed, `git log` is your audit trail

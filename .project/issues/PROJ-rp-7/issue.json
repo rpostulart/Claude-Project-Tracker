@@ -2,7 +2,7 @@
   "id": "PROJ-rp-7",
   "title": "Add copy button to wiki pages for easy export to Confluence etc",
   "type": "feature",
-  "status": "in-progress",
+  "status": "done",
   "priority": "medium",
   "assignee": "r.postulart@example.com",
   "author": "Claude Code",
