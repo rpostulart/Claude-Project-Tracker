@@ -74,14 +74,20 @@ if [[ ${#SUGGESTED_SLUG} -lt 2 ]]; then
 fi
 
 # Only prompt if not provided via args and not already in .env
+# Note: when piped via curl, stdin is the script so -t 0 is false.
+# We use /dev/tty to prompt the user even when piped.
+CAN_PROMPT=false
+if [[ -t 0 ]] || [[ -e /dev/tty ]]; then
+  CAN_PROMPT=true
+fi
+
 if [[ -z "$EMAIL" ]]; then
   if [[ -n "$EXISTING_EMAIL" ]]; then
     EMAIL="$EXISTING_EMAIL"
-  elif [[ -t 0 ]]; then
-    # Interactive terminal — prompt
+  elif [[ "$CAN_PROMPT" == true ]]; then
     echo ""
     echo "  Setting up your user identity..."
-    read -p "  Email [${DEFAULT_EMAIL}]: " EMAIL
+    read -p "  Email [${DEFAULT_EMAIL}]: " EMAIL < /dev/tty
     EMAIL="${EMAIL:-$DEFAULT_EMAIL}"
   else
     EMAIL="$DEFAULT_EMAIL"
@@ -91,8 +97,7 @@ fi
 if [[ -z "$SLUG" ]]; then
   if [[ -n "$EXISTING_SLUG" ]]; then
     SLUG="$EXISTING_SLUG"
-  elif [[ -t 0 ]]; then
-    # Interactive terminal — prompt for slug
+  elif [[ "$CAN_PROMPT" == true ]]; then
     EXISTING_SLUGS=""
     if [[ -f .project/config.json ]]; then
       EXISTING_SLUGS=$(grep '"slug"' .project/config.json 2>/dev/null | sed 's/.*"slug"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/' | tr '\n' ' ' || true)
@@ -100,7 +105,7 @@ if [[ -z "$SLUG" ]]; then
     if [[ -n "$EXISTING_SLUGS" ]]; then
       echo "  Existing team slugs: $EXISTING_SLUGS"
     fi
-    read -p "  Your unique slug (2-4 lowercase letters, e.g. 'rp') [${SUGGESTED_SLUG}]: " SLUG
+    read -p "  Your unique slug (2-4 lowercase letters, e.g. 'rp') [${SUGGESTED_SLUG}]: " SLUG < /dev/tty
     SLUG="${SLUG:-$SUGGESTED_SLUG}"
     # Validate slug format
     if ! echo "$SLUG" | grep -qE '^[a-z]{2,4}$'; then
@@ -113,7 +118,7 @@ if [[ -z "$SLUG" ]]; then
       exit 1
     fi
   else
-    # Non-interactive (piped from curl) — try suggested slug, or require --slug arg
+    # Truly non-interactive (no /dev/tty, e.g. CI) — require --slug arg
     if [[ -n "$SUGGESTED_SLUG" ]] && echo "$SUGGESTED_SLUG" | grep -qE '^[a-z]{2,4}$'; then
       SLUG="$SUGGESTED_SLUG"
       echo "  Auto-detected slug: $SLUG (from git user.name)"
