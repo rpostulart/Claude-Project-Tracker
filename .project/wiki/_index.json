@@ -19,6 +19,12 @@
       "parent": "functional"
     },
     {
+      "slug": "functional-todos",
+      "title": "Todos",
+      "order": 2,
+      "parent": "functional"
+    },
+    {
       "slug": "technical",
       "title": "Technical Docs",
       "order": 3,
@@ -53,6 +59,12 @@
       "title": "Solutions - DevOps",
       "order": 1,
       "parent": "solutions"
+    },
+    {
+      "slug": "technical-todos",
+      "title": "Todos",
+      "order": 3,
+      "parent": "technical"
     }
   ]
 }

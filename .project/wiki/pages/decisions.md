@@ -1,5 +1,17 @@
 # Decision Records
 
+## 2026-04-08 — Store todos as comment-type extension, not a separate data structure
+
+**Context:** Needed a way to add actionable todo items to issues. Could either create a dedicated `todos/` directory per issue (like `comments/`), add a `todos` array to `issue.json`, or extend the existing comment system.
+**Decision:** Extend comments with a `type: "todo"` field and a `done` boolean. Todos are stored as regular comment JSON files in the existing `comments/` directory.
+**Alternatives considered:**
+- Separate `todos/` directory per issue (clean separation but duplicates the comment infrastructure — numbering, timestamps, author tracking)
+- `todos` array in `issue.json` (simple but makes issue.json grow unboundedly, loses per-item timestamps/authors)
+- Markdown checklists in `description.md` (already supported for rendering, but no structured data for aggregation or API-level toggling)
+**Consequences:** Zero-cost migration — existing comments work unchanged. The `GET /api/todos` endpoint must scan all issue directories (acceptable for git-native project scale). Comment rendering logic needs a conditional branch for todo-type display. Todos and comments share a single chronological timeline per issue.
+
+---
+
 ## 2026-04-08 — Per-user slugs for issue ID collision prevention
 
 **Context:** When multiple team members use `.project` independently, they share a single `nextId` counter in `config.json`. Two people creating issues offline both get the same ID, causing git merge conflicts on push. A second collision point was `issues_index.json` (single JSON array).

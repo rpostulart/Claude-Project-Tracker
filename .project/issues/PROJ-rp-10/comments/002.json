@@ -1,0 +1,6 @@
+{
+  "id": "002",
+  "author": "Claude Code",
+  "content": "Documented in wiki:\n- Functional: [Todos](/wiki/functional-todos) — user guide for adding/managing todos\n- Technical: [Todos](/wiki/technical-todos) — API endpoints, comment schema, UI components\n- Decision: [Store todos as comment-type extension](/wiki/decisions) — rationale for extending comments vs separate storage",
+  "created": "2026-04-08T21:05:00.000Z"
+}

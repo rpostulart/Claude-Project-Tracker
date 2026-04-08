@@ -1,0 +1,13 @@
+{
+  "id": "PROJ-rp-10",
+  "title": "Add todo feature via comments with dedicated Todos view",
+  "type": "feature",
+  "status": "done",
+  "priority": "medium",
+  "assignee": "r.postulart@example.com",
+  "labels": ["ui", "backend"],
+  "parent": null,
+  "related": [],
+  "created": "2026-04-08T21:00:00.000Z",
+  "updated": "2026-04-08T21:05:00.000Z"
+}
