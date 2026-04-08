@@ -1,6 +1,6 @@
 {
   "id": "001",
   "author": "Claude Code",
-  "content": "Fixed init.sh non-interactive mode:\n- Auto-detects slug from git initials when piped via curl\n- Shows clear error with usage example when slug can't be determined\n- Added final validation that slug is never empty\n\nFile changed: `init.sh`",
+  "content": "Fixed init.sh silent failure in non-interactive (curl pipe) mode.\n\nRoot cause: `set -euo pipefail` + `grep` returning exit code 1 when `.env` exists but has no `PROJECT_SLUG=` line. The pipeline `grep ... | cut ... | tr ...` returns non-zero via pipefail, and `set -e` kills the script before any echo runs.\n\nFixes:\n- Added `|| true` to all piped grep commands in variable assignments (lines 65, 66, 98)\n- Added auto-detection of slug from git initials in non-interactive mode\n- Added clear error message with usage example when slug can't be determined\n- Added final validation that slug is never empty\n\nFile changed: `init.sh`",
   "created": "2026-04-08T12:45:00.000Z"
 }

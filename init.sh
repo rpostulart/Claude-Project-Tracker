@@ -62,8 +62,8 @@ DEFAULT_NAME=$(git config user.name 2>/dev/null || echo "")
 EXISTING_SLUG=""
 EXISTING_EMAIL=""
 if [[ -f .env ]]; then
-  EXISTING_SLUG=$(grep '^PROJECT_SLUG=' .env 2>/dev/null | cut -d= -f2 | tr -d '[:space:]')
-  EXISTING_EMAIL=$(grep '^PROJECT_USER=' .env 2>/dev/null | cut -d= -f2 | tr -d '[:space:]')
+  EXISTING_SLUG=$(grep '^PROJECT_SLUG=' .env 2>/dev/null | cut -d= -f2 | tr -d '[:space:]' || true)
+  EXISTING_EMAIL=$(grep '^PROJECT_USER=' .env 2>/dev/null | cut -d= -f2 | tr -d '[:space:]' || true)
 fi
 
 # Suggest slug from initials (first letter of each word in name)
@@ -95,7 +95,7 @@ if [[ -z "$SLUG" ]]; then
     # Interactive terminal — prompt for slug
     EXISTING_SLUGS=""
     if [[ -f .project/config.json ]]; then
-      EXISTING_SLUGS=$(grep '"slug"' .project/config.json 2>/dev/null | sed 's/.*"slug"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/' | tr '\n' ' ')
+      EXISTING_SLUGS=$(grep '"slug"' .project/config.json 2>/dev/null | sed 's/.*"slug"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/' | tr '\n' ' ' || true)
     fi
     if [[ -n "$EXISTING_SLUGS" ]]; then
       echo "  Existing team slugs: $EXISTING_SLUGS"
