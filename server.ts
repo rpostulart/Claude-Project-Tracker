@@ -165,8 +165,8 @@ async function saveUserCounter(slug: string, counter: { nextId: number }): Promi
 const INDEX_FILE = `${PROJECT_DIR}/issues_index.json`;
 
 function issueToIndexEntry(issue: Record<string, unknown>): Record<string, unknown> {
-  const { id, title, type, status, priority, assignee, labels, parent, created, updated } = issue;
-  return { id, title, type, status, priority, assignee, labels, parent, created, updated };
+  const { id, title, type, status, priority, assignee, labels, parent, related, created, updated } = issue;
+  return { id, title, type, status, priority, assignee, labels, parent, related: related || [], created, updated };
 }
 
 async function writeIndex(entries: Record<string, unknown>[]): Promise<void> {
@@ -262,6 +262,7 @@ async function createIssue(data: Record<string, unknown>): Promise<Record<string
     assignee: data.assignee || null,
     labels: data.labels || [],
     parent: data.parent || null,
+    related: data.related || [],
     created: new Date().toISOString(),
     updated: new Date().toISOString(),
   };
@@ -283,7 +284,7 @@ async function updateIssue(id: string, data: Record<string, unknown>): Promise<R
   if (!(await exists(path))) return null;
 
   const issue = (await readJson(path)) as Record<string, unknown>;
-  const allowed = ["title", "type", "status", "priority", "assignee", "labels", "parent"];
+  const allowed = ["title", "type", "status", "priority", "assignee", "labels", "parent", "related"];
   for (const key of allowed) {
     if (key in data) issue[key] = data[key];
   }
@@ -717,10 +718,8 @@ await syncSkills();
 
 // --- Start server ---
 
-// Ensure issues index exists on startup
-if (!(await exists(INDEX_FILE))) {
-  await rebuildIndex();
-}
+// Rebuild issues index on every startup to ensure consistency
+await rebuildIndex();
 
 console.log(`\n  🚀 Project Manager running at http://localhost:${PORT}`);
 console.log(`  📁 Project dir: ${PROJECT_DIR}\n`);

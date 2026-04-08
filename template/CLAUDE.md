@@ -146,12 +146,14 @@ Include in `description.md`:
   "assignee": "email@example.com",
   "labels": ["ui", "backend"],
   "parent": null,
+  "related": ["PROJ-rp-3"],
   "created": "2026-03-25T10:00:00.000Z",
   "updated": "2026-03-25T10:00:00.000Z"
 }
 ```
 
-Issue IDs use the format `{PREFIX}-{slug}-{N}` where `slug` is the user's unique 2-4 letter identifier. Legacy issues may use `{PREFIX}-{N}` format (without slug).
+- Issue IDs use the format `{PREFIX}-{slug}-{N}` where `slug` is the user's unique 2-4 letter identifier. Legacy issues may use `{PREFIX}-{N}` format (without slug).
+- `related`: array of issue IDs that are related to this issue (e.g. a bug caused by a feature). Optional, defaults to `[]`.
 
 ### .project/issues/{ID}/comments/NNN.json
 ```json

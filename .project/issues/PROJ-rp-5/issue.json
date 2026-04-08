@@ -2,12 +2,13 @@
   "id": "PROJ-rp-5",
   "title": "Fix init.sh silent failure in non-interactive (curl pipe) mode",
   "type": "bug",
-  "status": "in-progress",
+  "status": "done",
   "priority": "high",
   "assignee": "r.postulart@example.com",
   "author": "Claude Code",
   "labels": ["backend"],
   "parent": null,
+  "related": ["PROJ-4"],
   "created": "2026-04-08T12:40:00.000Z",
   "updated": "2026-04-08T12:40:00.000Z"
 }

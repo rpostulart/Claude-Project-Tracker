@@ -169,7 +169,9 @@ async function listIssues(): Promise<unknown[]> {
     if (!entry.isDirectory) continue;
     const issuePath = `${issuesDir}/${entry.name}/issue.json`;
     if (await exists(issuePath)) {
-      issues.push(await readJson(issuePath));
+      const issue = await readJson(issuePath) as Record<string, unknown>;
+      if (!issue.related) issue.related = [];
+      issues.push(issue);
     }
   }
   return issues.sort((a: any, b: any) => a.id.localeCompare(b.id, undefined, { numeric: true }));
@@ -216,6 +218,7 @@ async function createIssue(data: Record<string, unknown>): Promise<Record<string
     assignee: data.assignee || null,
     labels: data.labels || [],
     parent: data.parent || null,
+    related: data.related || [],
     created: new Date().toISOString(),
     updated: new Date().toISOString(),
   };
@@ -236,7 +239,7 @@ async function updateIssue(id: string, data: Record<string, unknown>): Promise<R
   if (!(await exists(path))) return null;
 
   const issue = (await readJson(path)) as Record<string, unknown>;
-  const allowed = ["title", "type", "status", "priority", "assignee", "labels", "parent"];
+  const allowed = ["title", "type", "status", "priority", "assignee", "labels", "parent", "related"];
   for (const key of allowed) {
     if (key in data) issue[key] = data[key];
   }

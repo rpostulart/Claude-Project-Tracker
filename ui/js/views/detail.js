@@ -53,6 +53,13 @@ export async function renderDetail(container, issueId) {
   // Find subtasks
   const subtasks = state.issues.filter(i => i.parent === issue.id);
 
+  // Find all related issues (explicit + reverse links)
+  const explicitRelated = issue.related || [];
+  const reverseRelated = state.issues
+    .filter(i => (i.related || []).includes(issue.id) && !explicitRelated.includes(i.id))
+    .map(i => i.id);
+  const allRelated = [...explicitRelated, ...reverseRelated];
+
   container.innerHTML = `
     <div class="detail-container">
       <a class="detail-back">← Back to board</a>
@@ -122,6 +129,32 @@ export async function renderDetail(container, issueId) {
         </div>
       ` : ''}
 
+      ${allRelated.length > 0 ? `
+        <div class="detail-section">
+          <h3>Related Issues</h3>
+          <div class="subtask-list">
+            ${allRelated.map(relId => {
+              const rel = state.issues.find(i => i.id === relId);
+              if (rel) {
+                return `
+                  <div class="subtask-item related-link" data-id="${rel.id}">
+                    <span class="issue-type ${rel.type}" style="width:18px;height:18px;font-size:9px;">${
+                      { feature: '★', bug: '●', task: '◆', epic: '⚡' }[rel.type] || '◆'
+                    }</span>
+                    <span class="issue-id">${rel.id}</span>
+                    <span style="flex:1">${escapeHtml(rel.title)}</span>
+                    <span class="status-badge ${rel.status}">${rel.status}</span>
+                  </div>`;
+              }
+              return `
+                <div class="subtask-item related-link" data-id="${relId}">
+                  <span class="issue-id">${relId}</span>
+                </div>`;
+            }).join('')}
+          </div>
+        </div>
+      ` : ''}
+
       <div class="detail-section">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
           <h3 style="margin-bottom:0">Description</h3>
@@ -181,6 +214,11 @@ export async function renderDetail(container, issueId) {
 
   // Event: Subtask click
   container.querySelectorAll('.subtask-item').forEach(el => {
+    el.addEventListener('click', () => navigate('detail', { issueId: el.dataset.id }));
+  });
+
+  // Event: Related issue click
+  container.querySelectorAll('.related-link').forEach(el => {
     el.addEventListener('click', () => navigate('detail', { issueId: el.dataset.id }));
   });
 

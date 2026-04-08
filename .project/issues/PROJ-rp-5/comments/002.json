@@ -1,0 +1,6 @@
+{
+  "id": "002",
+  "author": "Claude Code",
+  "content": "Final fix: replaced `prompt_user` function with inline `printf` + `read < /dev/tty`. The prompt text goes to stdout (visible to user), input reads from `/dev/tty` (works even when stdin is piped via curl). `|| true` prevents set -e death if /dev/tty is unavailable (CI).",
+  "created": "2026-04-08T13:00:00.000Z"
+}

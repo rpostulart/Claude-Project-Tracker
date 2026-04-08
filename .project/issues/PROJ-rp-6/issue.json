@@ -1,0 +1,14 @@
+{
+  "id": "PROJ-rp-6",
+  "title": "Add related field to issue.json for linking issues",
+  "type": "feature",
+  "status": "in-progress",
+  "priority": "medium",
+  "assignee": "r.postulart@example.com",
+  "author": "Claude Code",
+  "labels": ["backend"],
+  "parent": null,
+  "related": [],
+  "created": "2026-04-08T13:10:00.000Z",
+  "updated": "2026-04-08T13:10:00.000Z"
+}
