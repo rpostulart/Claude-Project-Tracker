@@ -1,0 +1,6 @@
+{
+  "id": "002",
+  "author": "Claude Code",
+  "content": "Implementation complete.\n\nChanges:\n- `server.ts`: Added `related` to `createIssue()`, `updateIssue()` allowed fields, and `issueToIndexEntry()` (defaults to `[]` for old issues). Index now rebuilds on every startup.\n- `.project/server.ts`: Same changes, plus `listIssues()` defaults `related` to `[]`.\n- `ui/js/views/detail.js`: Added \"Related Issues\" section with clickable links. Bidirectional — automatically shows reverse links (if A links to B, B also shows A).\n- `CLAUDE.md`: Updated issue.json format docs.\n- Synced to template and `.project/ui/`.\n- Retroactively linked PROJ-rp-5 → PROJ-4.",
+  "created": "2026-04-08T13:30:00.000Z"
+}

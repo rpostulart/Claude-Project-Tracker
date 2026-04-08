@@ -1,9 +1,24 @@
 [
   {
+    "id": "PROJ-rp-7",
+    "title": "Add copy button to wiki pages for easy export to Confluence etc",
+    "type": "feature",
+    "status": "in-progress",
+    "priority": "medium",
+    "assignee": "r.postulart@example.com",
+    "labels": [
+      "ui"
+    ],
+    "parent": null,
+    "related": [],
+    "created": "2026-04-08T14:00:00.000Z",
+    "updated": "2026-04-08T14:00:00.000Z"
+  },
+  {
     "id": "PROJ-rp-6",
     "title": "Add related field to issue.json for linking issues",
     "type": "feature",
-    "status": "in-progress",
+    "status": "done",
     "priority": "medium",
     "assignee": "r.postulart@example.com",
     "labels": [

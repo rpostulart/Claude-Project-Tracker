@@ -144,6 +144,7 @@ export async function renderWiki(container, slug) {
             <input type="text" class="wiki-title-input" id="wiki-title-input" value="${escapeHtml(currentPage.title)}" placeholder="Page title" />
             <div class="wiki-title-actions-wrapper">
               <div class="wiki-title-actions" id="wiki-title-actions">
+                <button class="btn btn-ghost btn-sm" id="btn-copy-wiki">Copy</button>
                 <button class="btn btn-ghost btn-sm" id="btn-edit-wiki">Edit</button>
                 <button class="btn btn-ghost btn-sm wiki-btn-danger" id="btn-delete-wiki">Delete</button>
               </div>
@@ -257,6 +258,28 @@ export async function renderWiki(container, slug) {
       // Convert preview HTML back to markdown
       return htmlToMarkdown(editPreview);
     }
+
+    // Copy button — copies raw markdown to clipboard
+    container.querySelector('#btn-copy-wiki').addEventListener('click', async (e) => {
+      const markdown = `# ${currentPage.title}\n\n${bodyContent}`;
+      try {
+        await navigator.clipboard.writeText(markdown);
+        const btn = e.target;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+      } catch {
+        // Fallback for older browsers
+        const ta = document.createElement('textarea');
+        ta.value = `# ${currentPage.title}\n\n${bodyContent}`;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        const btn = e.target;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+      }
+    });
 
     const viewActions = container.querySelector('#wiki-title-actions');
     const editActions = container.querySelector('#wiki-edit-actions');
