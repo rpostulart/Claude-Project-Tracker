@@ -23,6 +23,8 @@ After implementing a fact-checking feature:
 
 ## Notes
 
+- Run with an issue ID: `/document-completion PROJ-5` — or without, and it finds the most recently completed issue automatically
+- Wiki links are added to the issue description so users can navigate from issue to docs
 - Issue comments serve as the work log (no separate solution log needed)
 - At least one doc type should be created per completed issue
 - Add `skip-docs` label to trivial issues that don't need documentation

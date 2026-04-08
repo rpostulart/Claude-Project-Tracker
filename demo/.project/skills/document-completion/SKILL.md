@@ -1,6 +1,7 @@
 ---
 name: document-completion
 description: When an issue is completed, analyze what was done and create/update appropriate documentation in the wiki. Runs automatically after marking an issue as done.
+argument-hint: <ISSUE-ID>
 allowed-tools: Read, Write, Edit, Glob, Grep
 disable-model-invocation: false
 ---
@@ -11,9 +12,14 @@ When an issue is completed, create or update the right documentation based on wh
 
 Run this automatically after setting an issue status to "done" or "review".
 
+## Step 0: Find the Issue
+
+- If `$ARGUMENTS` is provided and looks like an issue ID (e.g., `PROJ-5`): use that issue
+- Otherwise: read `.project/issues_index.json` and find the most recently updated issue with status `done` or `review`
+
 ## Step 1: Analyze the Work
 
-Read the issue and its comments to determine:
+Read `.project/issues/{ID}/issue.json`, `description.md`, and all `comments/*.json` to determine:
 - What type of work was done (feature, bug fix, refactor, config change, API change)
 - What files were changed
 - Whether it affects end users, developers, or both
@@ -109,20 +115,32 @@ For each documentation type needed:
 
 ## Step 4: Link and Comment
 
-Add a comment to the issue listing what was documented:
-```json
-{
-  "id": "NNN",
-  "author": "Claude Code",
-  "content": "Documented in wiki:\n- Functional: functional-{area}\n- Technical: technical-{area}\n- Decision: decisions",
-  "created": "ISO-8601"
-}
-```
+1. **Append wiki links to the issue description** (`.project/issues/{ID}/description.md`):
+   Add a `## Documentation` section at the end with links to the created pages:
+   ```markdown
 
-Also **update the issues index** (`.project/issues_index.json`):
-- Read the index file (create as `[]` if missing)
-- Find the entry with matching `id` and update its `updated` field
-- Sort by `updated` descending, write back
+   ## Documentation
+   - [Functional: {title}](/wiki/functional-{area})
+   - [Technical: {title}](/wiki/technical-{area})
+   - [Decision Record](/wiki/decisions)
+   ```
+   Only include links for doc types that were actually created.
+
+2. **Add a short comment** to the issue:
+   ```json
+   {
+     "id": "NNN",
+     "author": "Claude Code",
+     "content": "Documented in wiki",
+     "created": "ISO-8601"
+   }
+   ```
+   Keep it minimal — the links are in the description.
+
+3. **Update the issues index** (`.project/issues_index.json`):
+   - Read the index file (create as `[]` if missing)
+   - Find the entry with matching `id` and update its `updated` field
+   - Sort by `updated` descending, write back
 
 ## Decision Matrix: Quick Reference
 
