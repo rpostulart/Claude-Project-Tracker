@@ -92,7 +92,7 @@ if [[ -z "$SLUG" ]]; then
   if [[ -n "$EXISTING_SLUG" ]]; then
     SLUG="$EXISTING_SLUG"
   elif [[ -t 0 ]]; then
-    # Read existing slugs from config.json to check uniqueness
+    # Interactive terminal — prompt for slug
     EXISTING_SLUGS=""
     if [[ -f .project/config.json ]]; then
       EXISTING_SLUGS=$(grep '"slug"' .project/config.json 2>/dev/null | sed 's/.*"slug"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/' | tr '\n' ' ')
@@ -113,8 +113,29 @@ if [[ -z "$SLUG" ]]; then
       exit 1
     fi
   else
-    SLUG="$SUGGESTED_SLUG"
+    # Non-interactive (piped from curl) — try suggested slug, or require --slug arg
+    if [[ -n "$SUGGESTED_SLUG" ]] && echo "$SUGGESTED_SLUG" | grep -qE '^[a-z]{2,4}$'; then
+      SLUG="$SUGGESTED_SLUG"
+      echo "  Auto-detected slug: $SLUG (from git user.name)"
+    else
+      echo ""
+      echo "  Error: Cannot determine your user slug in non-interactive mode."
+      echo "  Please re-run with --slug and --email flags:"
+      echo ""
+      echo "    curl -sL https://raw.githubusercontent.com/rpostulart/Claude-Project-Tracker/main/init.sh | bash -s -- --slug rp --email you@example.com"
+      echo ""
+      exit 1
+    fi
   fi
+fi
+
+# Final validation: slug must not be empty
+if [[ -z "$SLUG" ]]; then
+  echo ""
+  echo "  Error: No user slug could be determined."
+  echo "  Please re-run with: --slug <2-4 lowercase letters> --email <your-email>"
+  echo ""
+  exit 1
 fi
 
 echo ""

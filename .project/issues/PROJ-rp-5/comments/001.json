@@ -1,0 +1,6 @@
+{
+  "id": "001",
+  "author": "Claude Code",
+  "content": "Fixed init.sh non-interactive mode:\n- Auto-detects slug from git initials when piped via curl\n- Shows clear error with usage example when slug can't be determined\n- Added final validation that slug is never empty\n\nFile changed: `init.sh`",
+  "created": "2026-04-08T12:45:00.000Z"
+}
