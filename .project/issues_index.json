@@ -1,0 +1,38 @@
+[
+  {
+    "id": "PROJ-3",
+    "title": "Fix document-completion skill: add issue ID argument and improve comment/link behavior",
+    "type": "bug",
+    "status": "done",
+    "priority": "medium",
+    "assignee": "r.postulart@example.com",
+    "labels": ["docs"],
+    "parent": null,
+    "created": "2026-04-08T09:00:00.000Z",
+    "updated": "2026-04-08T09:05:00.000Z"
+  },
+  {
+    "id": "PROJ-2",
+    "title": "Simplify wiki doc types and fix parent nesting",
+    "type": "feature",
+    "status": "done",
+    "priority": "medium",
+    "assignee": "r.postulart@example.com",
+    "labels": ["docs"],
+    "parent": null,
+    "created": "2026-04-07T13:00:00.000Z",
+    "updated": "2026-04-07T13:10:00.000Z"
+  },
+  {
+    "id": "PROJ-1",
+    "title": "Add issues_index.json for fast issue lookups by AI",
+    "type": "feature",
+    "status": "done",
+    "priority": "medium",
+    "assignee": "r.postulart@example.com",
+    "labels": ["backend"],
+    "parent": null,
+    "created": "2026-04-07T12:00:00.000Z",
+    "updated": "2026-04-07T12:05:00.000Z"
+  }
+]

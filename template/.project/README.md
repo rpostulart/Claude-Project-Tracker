@@ -22,36 +22,46 @@ deno run --allow-net --allow-read --allow-write --allow-env .project/server.ts
 | `/review-ticket <ID>` | Read a ticket's complete history |
 | `/standup` | Summarize recent activity |
 | `/wiki-update <title>` | Create or update a wiki page |
-| `/document-completion` | Auto-document completed work in the wiki |
+| `/document-completion <ID>` | Auto-document completed work in the wiki |
+| `/rebuild-index` | Rebuild issues index from issue files |
 
 ### How It Works
 
 Claude Code reads `CLAUDE.md` in your repo root and automatically:
 1. Creates a ticket before starting any work
 2. Adds comments as it works (what it changed, why, which files)
-3. Updates the wiki with documentation when done
+3. Updates the wiki with functional docs, technical docs, and decision records
 4. Links ticket IDs in commit messages
 
 ### Folder Structure
 
 ```
 .project/
-├── config.json         # Project settings (prefix, statuses, team)
-├── server.ts           # Web UI server (Deno)
-├── ui/                 # Web UI (vanilla JS)
+├── config.json              # Project settings (prefix, statuses, team)
+├── issues_index.json        # Fast lookup index for all issues (auto-maintained)
+├── server.ts                # Web UI server (Deno)
+├── ui/                      # Web UI (vanilla JS)
 ├── issues/
 │   └── PROJ-1/
 │       ├── issue.json       # Status, priority, assignee, labels
-│       ├── description.md   # What was requested
+│       ├── description.md   # What was requested, wiki doc links
 │       └── comments/
 │           └── 001.json     # Progress updates
 ├── wiki/
-│   ├── _index.json     # Page tree
-│   └── pages/          # Markdown wiki pages
+│   ├── _index.json          # Page tree with parent/child nesting
+│   └── pages/
+│       ├── steering.md      # Project conventions for AI
+│       ├── functional/      # What features do (user perspective)
+│       ├── technical/       # How things work (developer perspective)
+│       └── decisions.md     # Why choices were made
 ├── boards/
-│   └── default.json    # Kanban columns
-└── skills/             # Claude Code skills (synced to .claude/skills/)
+│   └── default.json         # Kanban columns
+└── skills/                  # Claude Code skills (synced to .claude/skills/)
 ```
+
+### Issues Index
+
+The `issues_index.json` file contains a flat array of all issue metadata, sorted by most recently updated first. AI reads this single file instead of scanning every issue directory — much faster for finding recent issues, running standups, or searching for existing tickets. It's maintained automatically by the server and skills, and rebuilds itself if missing.
 
 ### Steering Files
 

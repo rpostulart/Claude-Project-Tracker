@@ -18,7 +18,7 @@ Drop a `.project/` folder into any git repo. Claude Code automatically:
 
 1. **Creates a ticket** before starting any work
 2. **Documents every step** — what it changed, why, which files, what decisions it made
-3. **Updates the wiki** with solutions, user guides, and technical docs
+3. **Updates the wiki** with functional docs, technical docs, and decision records
 4. **Links tickets to commits** so you can trace any change back to its reasoning
 
 Everything is plain Markdown and JSON. No database. No SaaS. No vendor lock-in. Just files in your repo.
@@ -55,7 +55,7 @@ Claude: 1. Creates MYAPP-1: "Fix login timeout bug"
            - "Root cause: token refresh waits for expired session"
            - "Fixed by adding early return on expired tokens"
            - "Modified: src/auth.ts, src/middleware.ts"
-        4. Updates wiki: Solutions - Auth
+        4. Updates wiki: Functional + Technical docs
         5. Commits with: fix(auth): resolve login timeout [MYAPP-1]
         6. Marks ticket as done
 
@@ -105,7 +105,8 @@ Claude reads these before every task and follows them.
 | `/review-ticket <ID>` | Read a ticket's complete history |
 | `/standup` | Summarize recent activity across issues and commits |
 | `/wiki-update <title>` | Create or update a wiki page |
-| `/document-completion` | Auto-document completed work in the wiki |
+| `/document-completion <ID>` | Auto-document completed work in the wiki |
+| `/rebuild-index` | Rebuild issues index from issue files |
 
 ## Enforcement Hooks
 
@@ -125,7 +126,7 @@ Claude: → creates issue, sets in-progress → continues working
          ...implements...
 Claude: "I've completed the form. Shall I mark PROJ-3 as done?"
 You: "yes"
-Claude: → writes wiki docs → marks done ✅
+Claude: → writes wiki docs (functional/technical/decisions) → marks done ✅
 
 You: "fix the typo on line 12"
 Claude: → hook asks "do you need an issue?"
@@ -139,29 +140,35 @@ Hooks are installed in `.claude/hooks/` and configured in `.claude/settings.json
 ```
 .project/
 ├── config.json              # Project settings (prefix, statuses, team)
+├── issues_index.json        # Fast lookup index for all issues (auto-maintained)
 ├── server.ts                # Deno server (API + web UI)
 ├── ui/                      # Web UI (vanilla JS, no build step)
 ├── issues/
 │   └── PROJ-1/
 │       ├── issue.json       # Status, priority, assignee, labels
-│       ├── description.md   # What was requested, acceptance criteria
+│       ├── description.md   # What was requested, acceptance criteria, wiki links
 │       └── comments/
 │           ├── 001.json     # "Starting work on this issue"
 │           ├── 002.json     # "Changed auth.ts: added early return"
-│           └── 003.json     # "Done. Modified 2 files, updated wiki"
+│           └── 003.json     # "Documented in wiki"
 ├── wiki/
 │   ├── _index.json          # Page tree with parent/child nesting
 │   └── pages/
 │       ├── steering.md      # Project conventions for AI
-│       ├── guide-auth.md    # Auto-generated user guide
-│       └── solutions-backend.md  # Auto-generated solution log
+│       ├── functional/      # What features do (user perspective)
+│       ├── technical/       # How things work (developer perspective)
+│       └── decisions.md     # Why choices were made
 ├── boards/
 │   └── default.json         # Kanban column definitions
 └── skills/
     ├── create-issue/SKILL.md
     ├── track-work/SKILL.md
-    └── ...                  # 8 skills, synced to .claude/skills/
+    └── ...                  # 9 skills, synced to .claude/skills/
 ```
+
+### Issues Index
+
+The `issues_index.json` file contains a flat array of all issue metadata, sorted by most recently updated first. AI reads this single file instead of scanning every issue directory — much faster for finding recent issues, running standups, or searching for existing tickets. It's maintained automatically by the server and skills, and rebuilds itself if missing or corrupt.
 
 ### Why Plain Files?
 
@@ -181,6 +188,7 @@ Hooks are installed in `.claude/hooks/` and configured in `.claude/settings.json
 | GET/PUT/DELETE | `/api/issues/:id` | Issue CRUD |
 | PUT | `/api/issues/:id/description` | Update description |
 | POST | `/api/issues/:id/comments` | Add comment |
+| POST | `/api/issues/rebuild-index` | Rebuild issues index |
 | GET | `/api/wiki` | Wiki page index |
 | GET | `/api/wiki/search?q=` | Search wiki content |
 | GET/PUT/DELETE | `/api/wiki/:slug` | Wiki page CRUD |
