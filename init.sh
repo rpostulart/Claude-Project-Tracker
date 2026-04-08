@@ -74,30 +74,23 @@ if [[ ${#SUGGESTED_SLUG} -lt 2 ]]; then
 fi
 
 # Only prompt if not provided via args and not already in .env
-# Note: when piped via curl, stdin is the script so -t 0 is false.
-# We use /dev/tty to prompt the user even when piped.
-CAN_PROMPT=false
-if [[ -t 0 ]] || [[ -e /dev/tty ]]; then
-  CAN_PROMPT=true
-fi
-
+# Note: when piped via curl, stdin is the script. We use /dev/tty to prompt.
 if [[ -z "$EMAIL" ]]; then
   if [[ -n "$EXISTING_EMAIL" ]]; then
     EMAIL="$EXISTING_EMAIL"
-  elif [[ "$CAN_PROMPT" == true ]]; then
+  else
     echo ""
     echo "  Setting up your user identity..."
-    read -p "  Email [${DEFAULT_EMAIL}]: " EMAIL < /dev/tty
+    printf "  Email [%s]: " "$DEFAULT_EMAIL"
+    read EMAIL < /dev/tty 2>/dev/null || true
     EMAIL="${EMAIL:-$DEFAULT_EMAIL}"
-  else
-    EMAIL="$DEFAULT_EMAIL"
   fi
 fi
 
 if [[ -z "$SLUG" ]]; then
   if [[ -n "$EXISTING_SLUG" ]]; then
     SLUG="$EXISTING_SLUG"
-  elif [[ "$CAN_PROMPT" == true ]]; then
+  else
     EXISTING_SLUGS=""
     if [[ -f .project/config.json ]]; then
       EXISTING_SLUGS=$(grep '"slug"' .project/config.json 2>/dev/null | sed 's/.*"slug"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/' | tr '\n' ' ' || true)
@@ -105,30 +98,17 @@ if [[ -z "$SLUG" ]]; then
     if [[ -n "$EXISTING_SLUGS" ]]; then
       echo "  Existing team slugs: $EXISTING_SLUGS"
     fi
-    read -p "  Your unique slug (2-4 lowercase letters, e.g. 'rp') [${SUGGESTED_SLUG}]: " SLUG < /dev/tty
+    printf "  Your unique slug (2-4 lowercase letters, e.g. 'rp') [%s]: " "$SUGGESTED_SLUG"
+    read SLUG < /dev/tty 2>/dev/null || true
     SLUG="${SLUG:-$SUGGESTED_SLUG}"
     # Validate slug format
-    if ! echo "$SLUG" | grep -qE '^[a-z]{2,4}$'; then
+    if [[ -n "$SLUG" ]] && ! echo "$SLUG" | grep -qE '^[a-z]{2,4}$'; then
       echo "  Error: Slug must be 2-4 lowercase letters (got: '$SLUG')"
       exit 1
     fi
     # Check uniqueness
-    if echo " $EXISTING_SLUGS " | grep -q " $SLUG "; then
+    if [[ -n "$EXISTING_SLUGS" ]] && echo " $EXISTING_SLUGS " | grep -q " $SLUG "; then
       echo "  Error: Slug '$SLUG' is already taken by another team member"
-      exit 1
-    fi
-  else
-    # Truly non-interactive (no /dev/tty, e.g. CI) — require --slug arg
-    if [[ -n "$SUGGESTED_SLUG" ]] && echo "$SUGGESTED_SLUG" | grep -qE '^[a-z]{2,4}$'; then
-      SLUG="$SUGGESTED_SLUG"
-      echo "  Auto-detected slug: $SLUG (from git user.name)"
-    else
-      echo ""
-      echo "  Error: Cannot determine your user slug in non-interactive mode."
-      echo "  Please re-run with --slug and --email flags:"
-      echo ""
-      echo "    curl -sL https://raw.githubusercontent.com/rpostulart/Claude-Project-Tracker/main/init.sh | bash -s -- --slug rp --email you@example.com"
-      echo ""
       exit 1
     fi
   fi
