@@ -9,28 +9,30 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-let hideClosed = false;
+let todoFilter = 'open'; // 'open', 'all', 'closed'
 
 export async function renderTodos(container) {
   const todos = await API.getTodos();
   const openCount = todos.filter(t => !t.done).length;
   const doneCount = todos.filter(t => t.done).length;
-  const visible = hideClosed ? todos.filter(t => !t.done) : todos;
+  const visible = todoFilter === 'open' ? todos.filter(t => !t.done)
+    : todoFilter === 'closed' ? todos.filter(t => t.done)
+    : todos;
 
   container.innerHTML = `
     <div class="todos-container">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
         <h2 style="margin:0">Todos</h2>
         <div style="display:flex;align-items:center;gap:16px;">
-          <label class="todo-filter-label">
-            <input type="checkbox" id="hide-closed" ${hideClosed ? 'checked' : ''}>
-            Hide closed
-          </label>
-          <span class="text-muted" style="font-size:13px">${openCount} open, ${doneCount} done</span>
+          <div class="todo-filter">
+            <button class="done-filter-btn${todoFilter === 'open' ? ' active' : ''}" data-filter="open">Open <span class="text-muted">${openCount}</span></button>
+            <button class="done-filter-btn${todoFilter === 'all' ? ' active' : ''}" data-filter="all">All <span class="text-muted">${openCount + doneCount}</span></button>
+            <button class="done-filter-btn${todoFilter === 'closed' ? ' active' : ''}" data-filter="closed">Closed <span class="text-muted">${doneCount}</span></button>
+          </div>
         </div>
       </div>
       <div class="todos-list">
-        ${visible.length === 0 ? `<p class="text-muted">${hideClosed && doneCount > 0 ? 'All todos are done!' : 'No todos yet. Add todos from issue comments.'}</p>` : ''}
+        ${visible.length === 0 ? `<p class="text-muted">${todoFilter === 'open' && doneCount > 0 ? 'All todos are done!' : todoFilter === 'closed' && openCount > 0 ? 'No closed todos yet.' : 'No todos yet. Add todos from issue comments.'}</p>` : ''}
         ${visible.map(todo => `
           <div class="todo-row${todo.done ? ' todo-row-done' : ''}">
             <label class="todo-checkbox-label">
@@ -51,10 +53,12 @@ export async function renderTodos(container) {
     </div>
   `;
 
-  // Hide closed filter
-  container.querySelector('#hide-closed').addEventListener('change', (e) => {
-    hideClosed = e.target.checked;
-    renderTodos(container);
+  // Filter buttons
+  container.querySelectorAll('.todo-filter .done-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      todoFilter = btn.dataset.filter;
+      renderTodos(container);
+    });
   });
 
   // Checkbox toggle handlers

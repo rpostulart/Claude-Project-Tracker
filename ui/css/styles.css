@@ -1296,10 +1296,8 @@ tr:hover .btn-delete-issue { opacity: 1; }
   text-decoration: none;
 }
 .todo-issue-link:hover { text-decoration: underline; }
-.todo-filter-label {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 13px; color: var(--color-text-muted); cursor: pointer;
-}
+.todo-filter { display: flex; gap: 4px; }
+.todo-filter .done-filter-btn span { font-weight: 400; opacity: 0.7; }
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
