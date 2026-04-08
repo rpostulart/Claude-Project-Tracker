@@ -324,12 +324,16 @@ async function addComment(id: string, data: Record<string, unknown>): Promise<Re
     }
   }
 
-  const comment = {
+  const comment: Record<string, unknown> = {
     id: String(maxNum + 1).padStart(3, "0"),
     author: data.author || "anonymous",
     content: data.content || "",
     created: new Date().toISOString(),
   };
+  if (data.type === "todo") {
+    comment.type = "todo";
+    comment.done = data.done ?? false;
+  }
 
   await writeJson(`${commentsDir}/${comment.id}.json`, comment);
 
@@ -341,6 +345,52 @@ async function addComment(id: string, data: Record<string, unknown>): Promise<Re
   await updateIndexEntry(issue);
 
   return comment;
+}
+
+async function updateComment(issueId: string, commentId: string, data: Record<string, unknown>): Promise<Record<string, unknown> | null> {
+  const commentPath = `${PROJECT_DIR}/issues/${issueId}/comments/${commentId}.json`;
+  if (!(await exists(commentPath))) return null;
+  const comment = (await readJson(commentPath)) as Record<string, unknown>;
+  if ("done" in data) comment.done = data.done;
+  if ("content" in data) comment.content = data.content;
+  await writeJson(commentPath, comment);
+  return comment;
+}
+
+async function getTodos(): Promise<unknown[]> {
+  const issuesDir = `${PROJECT_DIR}/issues`;
+  const todos: unknown[] = [];
+  if (!(await exists(issuesDir))) return todos;
+
+  for await (const entry of Deno.readDir(issuesDir)) {
+    if (!entry.isDirectory) continue;
+    const issueId = entry.name;
+    const issuePath = `${issuesDir}/${issueId}/issue.json`;
+    const commentsDir = `${issuesDir}/${issueId}/comments`;
+    if (!(await exists(issuePath)) || !(await exists(commentsDir))) continue;
+
+    const issue = (await readJson(issuePath)) as Record<string, unknown>;
+
+    for await (const cEntry of Deno.readDir(commentsDir)) {
+      if (!cEntry.name.endsWith(".json")) continue;
+      const comment = (await readJson(`${commentsDir}/${cEntry.name}`)) as Record<string, unknown>;
+      if (comment.type === "todo") {
+        todos.push({
+          ...comment,
+          issueId: issue.id,
+          issueTitle: issue.title,
+          issueStatus: issue.status,
+        });
+      }
+    }
+  }
+
+  todos.sort((a: any, b: any) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    return b.created.localeCompare(a.created);
+  });
+
+  return todos;
 }
 
 async function deleteIssue(id: string): Promise<boolean> {
@@ -494,6 +544,11 @@ async function handleApi(method: string, path: string, req: Request): Promise<Re
   }
 
   // Issues
+  // Todos
+  if (path === "/api/todos" && method === "GET") {
+    return json(await getTodos());
+  }
+
   if (path === "/api/issues" && method === "GET") {
     return json(await listIssues());
   }
@@ -524,6 +579,13 @@ async function handleApi(method: string, path: string, req: Request): Promise<Re
   if (descMatch && method === "PUT") {
     const { content } = await req.json();
     return (await updateDescription(descMatch[1], content)) ? json({ ok: true }) : error("Not found", 404);
+  }
+
+  const commentUpdateMatch = path.match(/^\/api\/issues\/([A-Z][A-Za-z0-9-]+-\d+)\/comments\/(\d+)$/);
+  if (commentUpdateMatch && method === "PUT") {
+    const data = await req.json();
+    const comment = await updateComment(commentUpdateMatch[1], commentUpdateMatch[2], data);
+    return comment ? json(comment) : error("Not found", 404);
   }
 
   const commentMatch = path.match(/^\/api\/issues\/([A-Z][A-Za-z0-9-]+-\d+)\/comments$/);

@@ -63,6 +63,17 @@ const API = {
     });
   },
 
+  updateComment(issueId, commentId, data) {
+    return this.request(`/issues/${issueId}/comments/${commentId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+
+  getTodos() {
+    return this.request('/todos');
+  },
+
   deleteIssue(id) {
     return this.request(`/issues/${id}`, { method: 'DELETE' });
   },

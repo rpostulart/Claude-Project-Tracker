@@ -5,6 +5,7 @@ import { renderList } from './views/list.js';
 import { renderDetail } from './views/detail.js';
 import { renderWiki } from './views/wiki.js';
 import { renderSkills } from './views/skills.js';
+import { renderTodos } from './views/todos.js';
 import { openModal, closeModal } from './components/modal.js';
 
 // App state
@@ -77,6 +78,9 @@ export async function render() {
       case 'skills':
         await renderSkills(main);
         break;
+      case 'todos':
+        await renderTodos(main);
+        break;
     }
   } catch (e) {
     main.innerHTML = `<div class="error-message">Error: ${e.message}</div>`;
@@ -119,6 +123,8 @@ async function init() {
     state.currentView = 'list';
   } else if (path === '/skills') {
     state.currentView = 'skills';
+  } else if (path === '/todos') {
+    state.currentView = 'todos';
   }
 
   // Update project name in header

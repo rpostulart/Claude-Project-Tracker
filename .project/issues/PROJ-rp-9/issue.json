@@ -5,9 +5,11 @@
   "status": "in-progress",
   "priority": "high",
   "assignee": "r.postulart@example.com",
-  "labels": ["devops"],
+  "labels": [
+    "devops"
+  ],
   "parent": null,
   "related": [],
   "created": "2026-04-08T12:00:00.000Z",
-  "updated": "2026-04-08T12:00:00.000Z"
+  "updated": "2026-04-08T20:33:52.386Z"
 }

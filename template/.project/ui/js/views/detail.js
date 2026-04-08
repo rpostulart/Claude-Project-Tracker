@@ -179,7 +179,22 @@ export async function renderDetail(container, issueId) {
       <div class="detail-section">
         <h3>Comments (${(issue.comments || []).length})</h3>
         <div class="comments-list">
-          ${(issue.comments || []).map(c => `
+          ${(issue.comments || []).map(c => {
+            if (c.type === 'todo') {
+              return `
+              <div class="comment todo-item">
+                <div class="comment-header">
+                  <label class="todo-checkbox-label">
+                    <input type="checkbox" class="todo-checkbox" data-comment-id="${c.id}" ${c.done ? 'checked' : ''}>
+                  </label>
+                  <span class="avatar" style="width:28px;height:28px">${getInitials(c.author)}</span>
+                  <span class="comment-author">${getName(c.author)}</span>
+                  <span class="comment-date">${formatDate(c.created)}</span>
+                </div>
+                <div class="comment-body description-content${c.done ? ' todo-done' : ''}">${renderMarkdown(c.content || '')}</div>
+              </div>`;
+            }
+            return `
             <div class="comment">
               <div class="comment-header">
                 <span class="avatar" style="width:28px;height:28px">${getInitials(c.author)}</span>
@@ -187,8 +202,8 @@ export async function renderDetail(container, issueId) {
                 <span class="comment-date">${formatDate(c.created)}</span>
               </div>
               <div class="comment-body description-content">${renderMarkdown(c.content || '')}</div>
-            </div>
-          `).join('')}
+            </div>`;
+          }).join('')}
         </div>
         <div class="comment-form">
           <div id="comment-editor-wrapper" style="display:none">
@@ -197,6 +212,7 @@ export async function renderDetail(container, issueId) {
           <textarea id="comment-input" placeholder="Write a comment..." style="min-height:80px"></textarea>
           <div style="display:flex;gap:8px;margin-top:8px;">
             <button class="btn btn-primary btn-sm" id="btn-add-comment">Add Comment</button>
+            <button class="btn btn-secondary btn-sm" id="btn-add-todo">Add Todo</button>
           </div>
         </div>
       </div>
@@ -308,5 +324,31 @@ export async function renderDetail(container, issueId) {
     commentInput.value = '';
     await loadData();
     await renderDetail(container, issueId);
+  });
+
+  // Add Todo button
+  container.querySelector('#btn-add-todo').addEventListener('click', async () => {
+    let content;
+    if (commentEditor && commentEditorWrapper.style.display !== 'none') {
+      content = commentEditor.getMarkdown();
+    } else {
+      content = commentInput.value.trim();
+    }
+    if (!content) return;
+
+    await API.addComment(issueId, { author: state.currentUser || 'anonymous', content, type: 'todo', done: false });
+    if (commentEditor) commentEditor.setContent('');
+    commentInput.value = '';
+    await loadData();
+    await renderDetail(container, issueId);
+  });
+
+  // Todo checkbox toggle
+  container.querySelectorAll('.todo-checkbox').forEach(cb => {
+    cb.addEventListener('change', async () => {
+      await API.updateComment(issueId, cb.dataset.commentId, { done: cb.checked });
+      await loadData();
+      await renderDetail(container, issueId);
+    });
   });
 }
