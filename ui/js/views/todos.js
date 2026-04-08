@@ -9,18 +9,29 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
+let hideClosed = false;
+
 export async function renderTodos(container) {
   const todos = await API.getTodos();
+  const openCount = todos.filter(t => !t.done).length;
+  const doneCount = todos.filter(t => t.done).length;
+  const visible = hideClosed ? todos.filter(t => !t.done) : todos;
 
   container.innerHTML = `
     <div class="todos-container">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
         <h2 style="margin:0">Todos</h2>
-        <span class="text-muted" style="font-size:13px">${todos.filter(t => !t.done).length} open, ${todos.filter(t => t.done).length} done</span>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <label class="todo-filter-label">
+            <input type="checkbox" id="hide-closed" ${hideClosed ? 'checked' : ''}>
+            Hide closed
+          </label>
+          <span class="text-muted" style="font-size:13px">${openCount} open, ${doneCount} done</span>
+        </div>
       </div>
       <div class="todos-list">
-        ${todos.length === 0 ? '<p class="text-muted">No todos yet. Add todos from issue comments.</p>' : ''}
-        ${todos.map(todo => `
+        ${visible.length === 0 ? `<p class="text-muted">${hideClosed && doneCount > 0 ? 'All todos are done!' : 'No todos yet. Add todos from issue comments.'}</p>` : ''}
+        ${visible.map(todo => `
           <div class="todo-row${todo.done ? ' todo-row-done' : ''}">
             <label class="todo-checkbox-label">
               <input type="checkbox" class="todo-toggle"
@@ -39,6 +50,12 @@ export async function renderTodos(container) {
       </div>
     </div>
   `;
+
+  // Hide closed filter
+  container.querySelector('#hide-closed').addEventListener('change', (e) => {
+    hideClosed = e.target.checked;
+    renderTodos(container);
+  });
 
   // Checkbox toggle handlers
   container.querySelectorAll('.todo-toggle').forEach(cb => {
