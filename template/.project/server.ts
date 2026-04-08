@@ -503,7 +503,7 @@ async function handleApi(method: string, path: string, req: Request): Promise<Re
     return json(await createIssue(data), 201);
   }
 
-  const issueMatch = path.match(/^\/api\/issues\/([A-Z][A-Za-z0-9-]+-\d+)$/);
+  const issueMatch = path.match(/^\/api\/issues\/([A-Za-z][A-Za-z0-9-]+-\d+)$/);
   if (issueMatch) {
     const id = issueMatch[1];
     if (method === "GET") {
@@ -520,13 +520,13 @@ async function handleApi(method: string, path: string, req: Request): Promise<Re
     }
   }
 
-  const descMatch = path.match(/^\/api\/issues\/([A-Z][A-Za-z0-9-]+-\d+)\/description$/);
+  const descMatch = path.match(/^\/api\/issues\/([A-Za-z][A-Za-z0-9-]+-\d+)\/description$/);
   if (descMatch && method === "PUT") {
     const { content } = await req.json();
     return (await updateDescription(descMatch[1], content)) ? json({ ok: true }) : error("Not found", 404);
   }
 
-  const commentMatch = path.match(/^\/api\/issues\/([A-Z][A-Za-z0-9-]+-\d+)\/comments$/);
+  const commentMatch = path.match(/^\/api\/issues\/([A-Za-z][A-Za-z0-9-]+-\d+)\/comments$/);
   if (commentMatch && method === "POST") {
     const data = await req.json();
     const comment = await addComment(commentMatch[1], data);
