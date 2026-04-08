@@ -1,0 +1,6 @@
+{
+  "id": "002",
+  "author": "Claude Code",
+  "content": "Fix applied: added `SLUG=$(echo \"$SLUG\" | tr '[:upper:]' '[:lower:]')` on line 104 of init.sh, right after the slug default is set and before validation. This converts any uppercase input to lowercase automatically.\n\nFiles modified:\n- `init.sh` (line 104): added auto-lowercase conversion\n- `template/init.sh`: synced from root init.sh\n\nBoth interactive input and `--slug` CLI argument are covered since they converge at the same code path.",
+  "created": "2026-04-08T10:01:00.000Z"
+}

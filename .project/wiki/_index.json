@@ -41,6 +41,18 @@
       "title": "Decision Records",
       "order": 4,
       "parent": null
+    },
+    {
+      "slug": "solutions",
+      "title": "Solutions",
+      "order": 5,
+      "parent": null
+    },
+    {
+      "slug": "solutions-devops",
+      "title": "Solutions - DevOps",
+      "order": 1,
+      "parent": "solutions"
     }
   ]
 }

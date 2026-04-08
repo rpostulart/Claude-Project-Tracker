@@ -1,0 +1,13 @@
+{
+  "id": "PROJ-rp-8",
+  "title": "Fix init.sh to auto-lowercase slug input instead of rejecting uppercase",
+  "type": "bug",
+  "status": "done",
+  "priority": "medium",
+  "assignee": "r.postulart@example.com",
+  "labels": ["devops"],
+  "parent": null,
+  "related": [],
+  "created": "2026-04-08T10:00:00.000Z",
+  "updated": "2026-04-08T10:00:00.000Z"
+}

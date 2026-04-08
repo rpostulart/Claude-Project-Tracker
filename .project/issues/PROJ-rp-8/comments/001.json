@@ -1,0 +1,6 @@
+{
+  "id": "001",
+  "author": "Claude Code",
+  "content": "Starting work on this issue. The fix is on line 103-105 of init.sh — need to lowercase the SLUG variable before the regex validation.",
+  "created": "2026-04-08T10:00:00.000Z"
+}
