@@ -1,0 +1,6 @@
+{
+  "id": "001",
+  "author": "Claude Code",
+  "content": "## Implementation\n\n**Change:** Wrapped `Deno.serve` start in a retry loop that catches `AddrInUse` and increments the port up to 20 attempts.\n\n**Files modified:**\n- `server.ts` — added port fallback loop around server start (lines 783-814)\n- `template/.project/server.ts` — synced\n\n**Behavior:**\n- If configured port is free → uses it (no extra output)\n- If in use → logs `⏳ Port X in use, trying X+1...` per attempt, then `⚠️  Port X was in use — using port Y instead` once it binds\n- Exits with code 1 if no port in range is free\n\n**Verified:** Ran server while port 8000 was held by Docker; it fell back to 8001 and logged the message as expected.",
+  "created": "2026-04-21T10:10:00.000Z"
+}

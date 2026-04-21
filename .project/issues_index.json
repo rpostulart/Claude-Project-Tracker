@@ -1,5 +1,37 @@
 [
   {
+    "id": "PROJ-rp-11",
+    "title": "Server: fall back to next available port when default is in use",
+    "type": "feature",
+    "status": "in-progress",
+    "priority": "medium",
+    "assignee": "r.postulart@example.com",
+    "labels": [
+      "backend",
+      "devops"
+    ],
+    "parent": null,
+    "related": [],
+    "created": "2026-04-21T10:00:00.000Z",
+    "updated": "2026-04-21T10:00:00.000Z"
+  },
+  {
+    "id": "PROJ-rp-10",
+    "title": "Add todo feature via comments with dedicated Todos view",
+    "type": "feature",
+    "status": "done",
+    "priority": "medium",
+    "assignee": "r.postulart@example.com",
+    "labels": [
+      "ui",
+      "backend"
+    ],
+    "parent": null,
+    "related": [],
+    "created": "2026-04-08T21:00:00.000Z",
+    "updated": "2026-04-08T21:05:00.000Z"
+  },
+  {
     "id": "PROJ-rp-9",
     "title": "Hooks silently skip enforcement when no git repo exists",
     "type": "bug",

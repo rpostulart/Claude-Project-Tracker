@@ -783,7 +783,35 @@ await syncSkills();
 // Rebuild issues index on every startup to ensure consistency
 await rebuildIndex();
 
-console.log(`\n  🚀 Project Manager running at http://localhost:${PORT}`);
-console.log(`  📁 Project dir: ${PROJECT_DIR}\n`);
+const MAX_PORT_ATTEMPTS = 20;
+let activePort = PORT;
+let server: Deno.HttpServer | null = null;
 
-Deno.serve({ port: PORT }, handleRequest);
+for (let attempt = 0; attempt < MAX_PORT_ATTEMPTS; attempt++) {
+  const candidate = PORT + attempt;
+  try {
+    server = Deno.serve({
+      port: candidate,
+      onListen: ({ port, hostname }) => {
+        activePort = port;
+        if (attempt > 0) {
+          console.log(`\n  ⚠️  Port ${PORT} was in use — using port ${port} instead`);
+        }
+        console.log(`\n  🚀 Project Manager running at http://${hostname === "0.0.0.0" ? "localhost" : hostname}:${port}`);
+        console.log(`  📁 Project dir: ${PROJECT_DIR}\n`);
+      },
+    }, handleRequest);
+    break;
+  } catch (err) {
+    if (err instanceof Deno.errors.AddrInUse) {
+      console.log(`  ⏳ Port ${candidate} in use, trying ${candidate + 1}...`);
+      continue;
+    }
+    throw err;
+  }
+}
+
+if (!server) {
+  console.error(`\n  ❌ Could not find a free port in range ${PORT}-${PORT + MAX_PORT_ATTEMPTS - 1}`);
+  Deno.exit(1);
+}
