@@ -241,7 +241,7 @@ async function getIssue(id: string): Promise<Record<string, unknown> | null> {
       }
     }
   }
-  issue.comments = comments.sort((a: any, b: any) => a.created.localeCompare(b.created));
+  issue.comments = comments.sort((a: any, b: any) => (a.created ?? a.id ?? "").localeCompare(b.created ?? b.id ?? ""));
 
   return issue;
 }
