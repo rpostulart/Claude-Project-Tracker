@@ -49,3 +49,14 @@ Version drift between the installed tracker and the upstream template was previo
 - prints a single-line notice only on version mismatch, asking Claude to confirm with the user before running the update command.
 
 Token cost on the silent path: **0**. The upstream URL is `CLAUDE_PROJECT_VERSION_URL` (default `raw.githubusercontent.com/rpostulart/Claude-Project-Tracker/main/VERSION`) so forks can redirect it.
+
+### Bumping VERSION
+
+The update-check hook only works if `VERSION` in the source repo actually changes when we ship things. Use `/bump-version`:
+
+- `/bump-version` — patch bump (bug fixes)
+- `/bump-version minor` — minor bump (new skill, new field, additive change)
+- `/bump-version major` — major bump (breaking change: file format shift, API removal)
+- `/bump-version 2.0.0` — explicit version
+
+The skill refuses to run in consumer repos (no `template/` folder) — in those, `VERSION` is installed state, not source.

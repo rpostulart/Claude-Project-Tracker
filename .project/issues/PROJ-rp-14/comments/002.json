@@ -1,0 +1,6 @@
+{
+  "id": "002",
+  "author": "Claude Code",
+  "content": "Documented in wiki:\n- Updated [Context & Token Budget](/wiki/technical-token-budget) — new 'Bumping VERSION' subsection explaining the `/bump-version` skill and when to use patch/minor/major.",
+  "created": "2026-04-22T12:48:00.000Z"
+}

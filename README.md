@@ -112,6 +112,7 @@ Claude reads these before every task and follows them.
 | `/wiki-update <title>` | Create or update a wiki page |
 | `/document-completion <ID>` | Auto-document completed work in the wiki |
 | `/rebuild-index` | Rebuild issues index from issue files |
+| `/bump-version` | Bump the tracker `VERSION` (semver) — run after changes that ship to consumer installs |
 
 ## Enforcement Hooks
 

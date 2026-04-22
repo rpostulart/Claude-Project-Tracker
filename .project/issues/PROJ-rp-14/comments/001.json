@@ -1,0 +1,6 @@
+{
+  "id": "001",
+  "author": "Claude Code",
+  "content": "Implemented.\n\n**Files added:**\n- `.project/skills/bump-version/SKILL.md` — patch/minor/major or explicit semver; refuses to run in consumer repos (no `template/`).\n- `demo/.project/skills/bump-version/SKILL.md` — same; rsynced to `template/.project/skills/`.\n- Symlinked into `.claude/skills/bump-version`.\n\n**Files modified:**\n- `VERSION`: `1.1.0 → 1.2.0` (minor bump — new skill + README changes shipped together).\n- `.project/VERSION`: mirrored to `1.2.0` (this repo is both source and self-install).\n- `CLAUDE.md` + `template/CLAUDE.md`: 'Sync template after changes' now also says 'run /bump-version so existing installs get notified'.\n- `README.md`: added `/bump-version` to the skills table.\n\n**Decision:** Minor (not patch) because we added a new skill since 1.1.0. Patch bumps for bug fixes, minor for additive features, major for breaking changes (file-format shifts, API removals, etc.).",
+  "created": "2026-04-22T12:45:00.000Z"
+}

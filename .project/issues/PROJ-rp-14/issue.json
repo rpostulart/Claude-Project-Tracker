@@ -1,0 +1,13 @@
+{
+  "id": "PROJ-rp-14",
+  "title": "Bump-version skill + rule to bump VERSION on tracker changes",
+  "type": "feature",
+  "status": "done",
+  "priority": "medium",
+  "assignee": "r.postulart@example.com",
+  "labels": ["devops", "docs"],
+  "parent": null,
+  "related": ["PROJ-rp-13"],
+  "created": "2026-04-22T12:30:00.000Z",
+  "updated": "2026-04-22T12:50:00.000Z"
+}

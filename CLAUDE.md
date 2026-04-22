@@ -32,7 +32,7 @@ Don't emit stub sections like "Acceptance criteria: TBD". Include a section only
 
 ## Sync template after changes
 
-When you change `ui/`, `server.ts`, `CLAUDE.md`, or `demo/.project/skills/`, sync to `template/` — see the steering page for exact commands.
+When you change `ui/`, `server.ts`, `CLAUDE.md`, or `demo/.project/skills/`, sync to `template/` — see the steering page for exact commands. Also run `/bump-version` so existing installs get notified by the update-check hook.
 
 > **Reminder:** issue → implement → document → ask → done. Never skip documentation.
 <!-- /.project -->
