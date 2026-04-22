@@ -1,0 +1,6 @@
+{
+  "id": "002",
+  "author": "Claude Code",
+  "content": "Documented in wiki:\n- New technical page: [Context & Token Budget](/wiki/technical-token-budget) — explains always-loaded vs on-demand, progressive comment loading, index-only lookup, skill description budget, and before/after estimates.\n- Decision records added to [Decisions](/wiki/decisions): (1) split CLAUDE.md into terse root + steering page; (2) progressive comment loading.\n- Steering page created: [Tracker Workflow (Detailed)](/wiki/steering-tracker-workflow) — holds the full workflow detail that used to live in CLAUDE.md.",
+  "created": "2026-04-22T10:20:00.000Z"
+}

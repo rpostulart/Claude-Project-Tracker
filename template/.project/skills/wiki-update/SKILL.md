@@ -1,6 +1,6 @@
 ---
 name: wiki-update
-description: Create or update a wiki page in .project/wiki/. Use when asked to document something, update docs, or write a wiki page.
+description: Create or update a wiki page in .project/wiki/.
 argument-hint: <page-title>
 allowed-tools: Read, Write, Edit, Glob
 ---

@@ -1,6 +1,6 @@
 ---
 name: track-work
-description: Start working on a task with full audit trail tracking. Creates or finds a ticket, sets status to in-progress, and tracks progress in comments. Use when asked to work on, fix, implement, or build something.
+description: Start tracked work: find/create ticket, set in-progress, track progress in comments.
 argument-hint: <ISSUE-ID or title>
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
@@ -10,13 +10,12 @@ Begin tracked work on an issue with full audit trail.
 ## Steps
 
 1. If `$ARGUMENTS` looks like an issue ID (matches `{PREFIX}-{slug}-{N}` or legacy `{PREFIX}-{N}` pattern):
-   - Read `.project/issues/$1/issue.json` to verify it exists
-   - Read `.project/issues/$1/description.md` for context
-   - Read all files in `.project/issues/$1/comments/` sorted by filename for history
-   - Summarize the issue and its history to the user
+   - Read `.project/issues/$1/issue.json` and `description.md`
+   - Read only the **last 3** comments from `.project/issues/$1/comments/` (highest-numbered filenames). Fetch older comments only if referenced or the user asks.
+   - Summarize to the user
 
 2. If `$ARGUMENTS` is a title (does not match an issue ID pattern):
-   - Search existing issues by scanning `.project/issues/*/issue.json` for matching titles
+   - Search `.project/issues_index.json` for matching titles (do not scan `issues/*/issue.json` by hand)
    - If a match is found, use that issue
    - If no match, create a new issue:
      - Read `.project/config.json` for prefix and team info

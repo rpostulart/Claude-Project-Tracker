@@ -1,6 +1,6 @@
 ---
 name: add-comment
-description: Add a comment to an issue. Use when asked to comment on a ticket or add notes to an issue.
+description: Add a comment to an issue.
 argument-hint: <ISSUE-ID> <comment>
 allowed-tools: Read, Write, Glob
 ---

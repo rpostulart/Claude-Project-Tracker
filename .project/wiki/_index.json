@@ -7,6 +7,12 @@
       "parent": null
     },
     {
+      "slug": "steering-tracker-workflow",
+      "title": "Tracker Workflow (Detailed)",
+      "order": 1,
+      "parent": "steering"
+    },
+    {
       "slug": "functional",
       "title": "Functional Docs",
       "order": 2,
@@ -64,6 +70,12 @@
       "slug": "technical-todos",
       "title": "Todos",
       "order": 3,
+      "parent": "technical"
+    },
+    {
+      "slug": "technical-token-budget",
+      "title": "Context & Token Budget",
+      "order": 4,
       "parent": "technical"
     }
   ]

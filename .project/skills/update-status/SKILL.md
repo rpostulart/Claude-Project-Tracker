@@ -1,6 +1,6 @@
 ---
 name: update-status
-description: Update the status of an issue. Use when asked to move a ticket, change status, mark as done, or close an issue.
+description: Change the status of an issue.
 argument-hint: <ISSUE-ID> <status>
 allowed-tools: Read, Edit
 ---

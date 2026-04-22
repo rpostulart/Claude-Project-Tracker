@@ -1,6 +1,6 @@
 ---
 name: document-completion
-description: When an issue is completed, analyze what was done and create/update appropriate documentation in the wiki. Runs automatically after marking an issue as done.
+description: Document a completed issue in the wiki (functional, technical, decision, solution).
 allowed-tools: Read, Write, Edit, Glob, Grep
 disable-model-invocation: false
 ---

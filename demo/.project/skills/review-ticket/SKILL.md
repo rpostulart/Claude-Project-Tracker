@@ -1,18 +1,19 @@
 ---
 name: review-ticket
-description: Read and summarize a ticket's full history including description, all comments, and current status. Use when asked to look at, review, check, or understand a past ticket.
+description: Summarize a ticket's history, description, comments, and status.
 argument-hint: <ISSUE-ID>
 allowed-tools: Read, Glob
 ---
 
 Review a ticket's complete history and summarize it.
 
-## Steps
+## Steps (progressive load — stop when the user's question is answered)
 
-1. Read `.project/issues/$1/issue.json` for metadata (status, priority, assignee, labels, type)
-2. Read `.project/issues/$1/description.md` for the original problem statement
-3. Read all `.project/issues/$1/comments/*.json` files, sorted by filename (001.json, 002.json, ...)
-4. Check for subtasks: scan `.project/issues/*/issue.json` for any issues with `"parent": "$1"`
+1. Read `.project/issues/$1/issue.json` for metadata (status, priority, assignee, labels, type).
+2. Read `.project/issues/$1/description.md` for the original problem.
+3. List `.project/issues/$1/comments/` (Glob), then read only the **last 3** comments (highest-numbered filenames).
+4. If those are sufficient, stop. Only if the user wants full history or the last 3 reference earlier context, read older comments.
+5. Subtasks: check `.project/issues_index.json` for entries with `"parent": "$1"`. Do not scan `issues/*/issue.json` by hand.
 
 ## Output Format
 

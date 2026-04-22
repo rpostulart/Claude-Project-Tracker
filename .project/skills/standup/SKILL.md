@@ -1,6 +1,6 @@
 ---
 name: standup
-description: Summarize recent project activity across issues and commits. Use when asked for a standup, status update, or what happened recently.
+description: Summarize recent activity across issues and commits.
 allowed-tools: Read, Glob, Grep, Bash(git log *)
 ---
 

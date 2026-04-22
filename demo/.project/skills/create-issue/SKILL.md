@@ -1,6 +1,6 @@
 ---
 name: create-issue
-description: Create a new issue in .project/issues/. Use when the user asks to create a ticket, issue, bug report, or feature request.
+description: Create a new issue (ticket, bug, feature request).
 argument-hint: <title>
 allowed-tools: Read, Write, Glob, Grep, Edit, Bash
 ---
@@ -21,7 +21,7 @@ Create a new issue in the project tracker.
    - assignee from USER_EMAIL env var (or "unassigned")
    - author: USER_EMAIL env var, or "Claude Code" if created by AI
    - created/updated timestamps
-6. Create `description.md` with the issue title as heading
+6. Create `description.md` with the issue title as heading. Include only sections with real content — "What was requested" is the one consistent requirement. Skip empty "Acceptance criteria / Technical approach / Context" stubs.
 7. Increment the issue counter in `.project/counters/{slug}.json` (NOT in config.json)
 8. **Update issues index**: Read `.project/issues_index.json` (create as `[]` if missing). Add an entry with: `id`, `title`, `type`, `status`, `priority`, `assignee`, `labels`, `parent`, `created`, `updated`. Sort by `updated` descending. Write back.
 9. Report the created issue ID

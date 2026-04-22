@@ -1,0 +1,13 @@
+{
+  "id": "PROJ-rp-12",
+  "title": "Token optimization: slim tracker overhead",
+  "type": "task",
+  "status": "done",
+  "priority": "medium",
+  "assignee": "r.postulart@example.com",
+  "labels": ["performance", "docs"],
+  "parent": null,
+  "related": [],
+  "created": "2026-04-22T10:00:00.000Z",
+  "updated": "2026-04-22T10:25:00.000Z"
+}
