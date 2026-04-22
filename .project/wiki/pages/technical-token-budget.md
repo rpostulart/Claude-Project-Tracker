@@ -38,3 +38,14 @@ Skill frontmatter `description` fields are injected into the system prompt on ev
 | Last 3 comments of active issue | variable | Per review-ticket/track-work |
 
 Previous baseline before slimming: ~2.6k tokens always-loaded. New baseline: ~550 tokens always-loaded.
+
+## Update check via SessionStart hook
+
+Version drift between the installed tracker and the upstream template was previously invisible — users kept running old code until someone manually re-ran `init.sh --update`. Putting an update-check instruction in `CLAUDE.md` would have cost ~30 tokens per turn forever, so instead we use a `SessionStart` hook (`.claude/hooks/check-version.sh`) that:
+
+- reads local `.project/VERSION`, curls the remote `VERSION`, compares;
+- throttles itself via `.project/.version-check-ts` to at most once per 24h (configurable with `CLAUDE_PROJECT_VERSION_THROTTLE`);
+- exits silently (no output = no context added) when up-to-date or throttled;
+- prints a single-line notice only on version mismatch, asking Claude to confirm with the user before running the update command.
+
+Token cost on the silent path: **0**. The upstream URL is `CLAUDE_PROJECT_VERSION_URL` (default `raw.githubusercontent.com/rpostulart/Claude-Project-Tracker/main/VERSION`) so forks can redirect it.

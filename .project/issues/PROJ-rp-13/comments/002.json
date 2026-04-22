@@ -1,0 +1,6 @@
+{
+  "id": "002",
+  "author": "Claude Code",
+  "content": "Documented in wiki:\n- Updated [Context & Token Budget](/wiki/technical-token-budget) — new section explaining the SessionStart update-check hook and why it's not in CLAUDE.md.\n- Appended to [Decisions](/wiki/decisions): 2026-04-22 — SessionStart hook for update checks (not a CLAUDE.md instruction).",
+  "created": "2026-04-22T11:35:00.000Z"
+}

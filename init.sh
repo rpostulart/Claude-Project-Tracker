@@ -173,6 +173,13 @@ else
 fi
 echo "  Installed .project/"
 
+# --- Write VERSION file for update-check hook ---
+if [[ -f "$TMPDIR/repo/VERSION" ]]; then
+  cp "$TMPDIR/repo/VERSION" .project/VERSION
+  VERSION_STR=$(tr -d '[:space:]' < .project/VERSION)
+  echo "  Recorded tracker version: $VERSION_STR"
+fi
+
 # --- Write config.json ---
 if [[ ! -f .project/config.json ]]; then
   # Fresh install: create config with team entry including slug
@@ -304,6 +311,16 @@ HOOKS_CONFIG='{
           }
         ]
       }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/check-version.sh"
+          }
+        ]
+      }
     ]
   }
 }'
@@ -382,6 +399,11 @@ fi
 if ! grep -q 'issues_index.json' .gitignore 2>/dev/null; then
   echo '.project/issues_index.json' >> .gitignore
   echo "  Added .project/issues_index.json to .gitignore"
+fi
+# Gitignore the version-check throttle timestamp (local state)
+if ! grep -q '.version-check-ts' .gitignore 2>/dev/null; then
+  echo '.project/.version-check-ts' >> .gitignore
+  echo "  Added .project/.version-check-ts to .gitignore"
 fi
 
 # --- .env ---

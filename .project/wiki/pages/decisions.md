@@ -1,5 +1,17 @@
 # Decision Records
 
+## 2026-04-22 — SessionStart hook for update checks (not a CLAUDE.md instruction)
+
+**Context:** Users install the tracker via `curl ... | bash` and have no way to know when the upstream template has changed. Manual re-running of `init.sh --update` per repo doesn't scale. A CLAUDE.md instruction telling Claude to check would cost ~30 tokens every turn forever, plus Claude has no reliable cross-session memory of "last checked".
+**Decision:** Add a `SessionStart` hook (`.claude/hooks/check-version.sh`) that compares local `.project/VERSION` against the upstream `VERSION` file on GitHub. Throttled to once per 24h via `.project/.version-check-ts`. Silent (zero token cost) when up-to-date; prints a single-line notice only on mismatch.
+**Alternatives considered:**
+- CLAUDE.md instruction (permanent token cost, unreliable without state file Claude must manage)
+- Nightly cron (users don't all run crons, and output has to surface into Claude somehow)
+- Check inside `init.sh` itself (only runs when user manually invokes it — defeats the purpose)
+**Consequences:** Zero ongoing token cost on the happy path. Dependency on `curl` (universal on macOS/Linux) and a 3-second network timeout so slow connections never block session start. Throttle timestamp is gitignored (local state, not shared). Users must re-run `init.sh --update` once to get the hook installed; from that point forward, updates self-announce.
+
+---
+
 ## 2026-04-22 — Split tracker workflow: terse CLAUDE.md + steering wiki page
 
 **Context:** The always-loaded `CLAUDE.md` had grown to 226 lines covering golden rules, full workflow, DoD checklist, file formats, same-vs-new-ticket rules, description templates, and sync commands. Every turn — even trivial ones — paid ~2k tokens for content only needed when actively doing tracker work. Combined with skill `description` frontmatter (also always loaded), the tracker's "idle cost" was ~2.6k tokens per message.

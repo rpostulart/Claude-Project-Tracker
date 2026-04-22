@@ -1,0 +1,13 @@
+{
+  "id": "PROJ-rp-13",
+  "title": "Periodic update check via SessionStart hook",
+  "type": "feature",
+  "status": "in-progress",
+  "priority": "medium",
+  "assignee": "r.postulart@example.com",
+  "labels": ["devops", "performance"],
+  "parent": null,
+  "related": ["PROJ-rp-12"],
+  "created": "2026-04-22T11:00:00.000Z",
+  "updated": "2026-04-22T11:00:00.000Z"
+}
