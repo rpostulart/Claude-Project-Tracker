@@ -121,6 +121,7 @@ The tracker installs two Claude Code hooks that enforce the workflow automatical
 |------|---------|-------------|
 | `require-issue.sh` | Every Edit/Write | Reminds Claude to decide if an issue is needed. Blocks once, then allows if Claude decides it's trivial. |
 | `require-docs.sh` | Marking issue as done | Blocks setting status to "done" unless wiki docs exist or issue has "skip-docs" label. |
+| `check-version.sh` | Session start (max 1× / 24h) | Compares local `.project/VERSION` against upstream. Silent when up-to-date (zero token cost); on mismatch, asks the user whether to run `init.sh --update`. |
 
 **How it feels in practice:**
 
@@ -140,11 +141,38 @@ Claude: → decides: trivial fix, no issue needed → fixes directly ✅
 
 Hooks are installed in `.claude/hooks/` and configured in `.claude/settings.json`. They skip `.project/` files, `.claude/` files, and config files automatically.
 
+## Token Budget
+
+Every Claude Code turn loads `CLAUDE.md` and all skill `description` frontmatter *before the user even types*. On a naive install that "idle cost" adds up fast. The tracker is tuned so the always-loaded overhead stays small:
+
+- **Terse `CLAUDE.md` + on-demand steering page.** Golden rules, one-line workflow, and the lookup order live in the always-loaded `CLAUDE.md` (~40 lines). Full detail — file formats, same-ticket-vs-new rules, description templates, sync commands — lives in `.project/wiki/pages/steering-tracker-workflow.md` and is only read when a workflow question comes up.
+- **Short skill descriptions.** Each skill's frontmatter `description` is ≤15 words. No "Use when asked to..." padding.
+- **Progressive comment loading.** `/review-ticket` and `/track-work` read `issue.json` + `description.md` + the **last 3 comments** first. Older comments load only when referenced or explicitly requested. Saves 500–3k tokens per invocation on long-lived tickets.
+- **Index-only lookup.** Skills use `issues_index.json`, never a directory scan.
+
+Baseline went from ~2.6k tokens per turn always-loaded to ~550. See the [Context & Token Budget wiki page](.project/wiki/pages/technical-token-budget.md) for the full breakdown.
+
+## Staying Up to Date
+
+The tracker ships a `VERSION` file and a `SessionStart` hook (`.claude/hooks/check-version.sh`) that compares the local version against upstream at most once every 24 hours. When they match, the hook is silent (no tokens consumed). When upstream has a newer version, Claude sees a one-line notice and asks you before running the update:
+
+```bash
+curl -sL https://raw.githubusercontent.com/rpostulart/Claude-Project-Tracker/main/init.sh | bash -s -- --update
+```
+
+Tunable via env vars:
+
+- `CLAUDE_PROJECT_VERSION_URL` — point at your own fork's `VERSION` file.
+- `CLAUDE_PROJECT_VERSION_THROTTLE` — hours between checks (default `24`).
+
+Existing installs pick up the hook on their next `init.sh --update` run; from then on, updates self-announce.
+
 ## Folder Structure
 
 ```
 .project/
 ├── config.json              # Project settings (prefix, statuses, team with slugs)
+├── VERSION                  # Installed tracker version (compared to upstream by the update-check hook)
 ├── issues_index.json        # Fast lookup index (auto-rebuilt on startup, gitignored)
 ├── counters/
 │   └── rp.json              # Per-user issue counter (one file per team member)
