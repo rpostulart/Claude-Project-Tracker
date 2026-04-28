@@ -1,16 +1,24 @@
 ---
 name: standup
 description: Summarize recent activity across issues and commits.
-allowed-tools: Read, Glob, Grep, Bash(git log *)
+allowed-tools: Read, Glob, Grep, Bash(git log *), Bash(jq *)
 ---
 
 Generate a standup summary of recent project activity.
 
 ## Steps
 
-1. Read all issues from `.project/issues/*/issue.json`
-2. Find issues updated in the last 24 hours
-3. Check `git log --oneline --since="24 hours ago"` for recent commits
+1. Query the index with `jq` instead of reading the full file. Token-efficient TOON output:
+   ```bash
+   jq -r --arg since "$(date -u -v-24H +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u -d '24 hours ago' +%Y-%m-%dT%H:%M:%SZ)" '
+     [.[] | select(.updated >= $since)] as $r
+     | "issues[\($r | length)]{id,status,priority,title}:",
+       ($r[] | "  \(.id),\(.status),\(.priority),\(.title)")
+   ' .project/issues_index.json
+   ```
+   This emits TOON (Token-Oriented Object Notation) — ~40% fewer tokens than JSON. Only use the bare filename if `jq` is unavailable; never dump the full file.
+2. If the index is missing or stale, run `/rebuild-index`.
+3. Check `git log --oneline --since="24 hours ago"` for recent commits.
 4. Summarize in this format:
 
 ### Done
@@ -24,3 +32,5 @@ Generate a standup summary of recent project activity.
 
 ### Recent Commits
 - Recent commits with their messages
+
+Keep the whole standup output ≤ ~25 lines. No analysis paragraphs — bullets only.

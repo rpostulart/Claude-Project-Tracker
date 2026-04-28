@@ -11,11 +11,19 @@ Begin tracked work on an issue with full audit trail.
 
 1. If `$ARGUMENTS` looks like an issue ID (matches `{PREFIX}-{slug}-{N}` or legacy `{PREFIX}-{N}` pattern):
    - Read `.project/issues/$1/issue.json` and `description.md`
-   - Read only the **last 3** comments from `.project/issues/$1/comments/` (highest-numbered filenames). Fetch older comments only if referenced or the user asks.
-   - Summarize to the user
+   - Read only the **last 1 comment** by default (highest-numbered filename). Fetch older comments only if the user asks or the latest references prior context.
+   - Summarize to the user in ≤ 5 lines
 
 2. If `$ARGUMENTS` is a title (does not match an issue ID pattern):
-   - Search `.project/issues_index.json` for matching titles (do not scan `issues/*/issue.json` by hand)
+   - Search the index with `jq` (TOON output, no full-file dump):
+     ```bash
+     jq -r --arg q "$ARGUMENTS" '
+       [.[] | select((.title|ascii_downcase) | contains($q|ascii_downcase))] as $r
+       | "matches[\($r | length)]{id,status,title}:",
+         ($r[] | "  \(.id),\(.status),\(.title)")
+     ' .project/issues_index.json
+     ```
+   - Do not scan `issues/*/issue.json` by hand.
    - If a match is found, use that issue
    - If no match, create a new issue:
      - Read `.project/config.json` for prefix and team info
@@ -48,6 +56,6 @@ As you implement changes, periodically add comments to the issue documenting:
 
 ## When Done
 
-1. Add a final summary comment listing all changes made
-2. Update issue status to `review` or `done`
-3. Include the ticket ID in any commit message: `feat(module): description [PREFIX-slug-N]`
+1. Add a **short** final summary comment (≤ 8 bullets, ≤ 600 chars). What shipped + wiki/PR link. No transcripts, no recap.
+2. Update issue status to `review` or `done`.
+3. Include the ticket ID in any commit message: `feat(module): description [PREFIX-slug-N]`.

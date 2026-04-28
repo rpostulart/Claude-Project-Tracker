@@ -7,6 +7,16 @@ allowed-tools: Read, Write, Glob
 
 Add a comment to an existing issue.
 
+## Style rules (apply to `content`)
+
+Keep comments short. Future sessions re-read these — every word costs tokens.
+
+- ≤ 8 bullets, ≤ 600 chars total per comment.
+- Lead with what changed; skip narration of attempts that didn't ship.
+- No typecheck/test transcripts, no full file lists, no celebratory recap.
+- File refs: `path:line` format only when load-bearing.
+- If you exceed 600 chars, split into a wiki page and link to it instead.
+
 ## Steps
 
 1. Read `.project/issues/$1/issue.json` to verify it exists

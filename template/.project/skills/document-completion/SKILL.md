@@ -2,11 +2,20 @@
 name: document-completion
 description: Document a completed issue in the wiki (functional, technical, decision, solution).
 argument-hint: <ISSUE-ID>
-allowed-tools: Read, Write, Edit, Glob, Grep
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash(jq *)
 disable-model-invocation: false
 ---
 
 When an issue is completed, create or update the right documentation based on what was done.
+
+## Style rules (apply throughout)
+
+Keep wiki content lean. Every word is re-read on later sessions.
+
+- Wiki pages: decisions, invariants, and "what + why" only. Do **not** paste diffs, full code blocks, or typecheck output.
+- Outro comment on the issue: 2–4 lines. Format: `Documented in wiki: <link>. <Branch/PR>.` Nothing else.
+- Issue description's `## Documentation` section: links only — no prose.
+- Prefer one wiki page per **feature area** (long-lived) over one page per ticket.
 
 ## When to Trigger
 
@@ -14,8 +23,16 @@ Run this automatically after setting an issue status to "done" or "review".
 
 ## Step 0: Find the Issue
 
-- If `$ARGUMENTS` is provided and looks like an issue ID (e.g., `PROJ-5`): use that issue
-- Otherwise: read `.project/issues_index.json` and find the most recently updated issue with status `done` or `review`
+- If `$ARGUMENTS` is provided and looks like an issue ID (e.g., `PROJ-5`): use that issue.
+- Otherwise: query the index with `jq` (TOON output, no full-file dump) for the most recently updated `done` or `review` issue:
+  ```bash
+  jq -r '
+    [.[] | select(.status == "done" or .status == "review")]
+    | sort_by(.updated) | reverse | .[0:1]
+    | "candidate[\(length)]{id,status,title}:",
+      (.[] | "  \(.id),\(.status),\(.title)")
+  ' .project/issues_index.json
+  ```
 
 ## Step 1: Analyze the Work
 
@@ -126,16 +143,16 @@ For each documentation type needed:
    ```
    Only include links for doc types that were actually created.
 
-2. **Add a short comment** to the issue:
+2. **Add a short outro comment** to the issue (2–4 lines max):
    ```json
    {
      "id": "NNN",
      "author": "Claude Code",
-     "content": "Documented in wiki",
+     "content": "Documented in wiki: /wiki/functional-{area}. Branch: feat/{ID}-{slug}.",
      "created": "ISO-8601"
    }
    ```
-   Keep it minimal — the links are in the description.
+   No celebratory recap. No "Next steps" section. Links live in the description.
 
 3. **Update the issues index** (`.project/issues_index.json`):
    - Read the index file (create as `[]` if missing)

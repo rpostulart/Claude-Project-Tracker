@@ -1,0 +1,13 @@
+{
+  "id": "PROJ-rp-15",
+  "title": "Skills emit TOON + filtered index reads to cut token cost",
+  "type": "task",
+  "status": "done",
+  "priority": "high",
+  "assignee": "r.postulart@example.com",
+  "labels": ["performance", "skip-docs"],
+  "parent": null,
+  "related": ["PROJ-rp-12"],
+  "created": "2026-04-28T00:00:00.000Z",
+  "updated": "2026-04-28T00:10:00.000Z"
+}
